@@ -11,7 +11,7 @@ process.stdout.write(`${line}\n${msg}\n${line}\n`);
 
 module.exports = {
     mode: "production",
-    entry: "./main.js",
+    entry: "./src/main.js",
     output: {
         path: path.resolve(process.cwd(), 'dist'),
         filename: "./bundle.min.js"
@@ -64,11 +64,11 @@ module.exports = {
             "typeof FEATURE_SOUND": JSON.stringify(true)
         }),
         new HtmlWebpackPlugin({
-            template: "./index.html"
+            template: "./src/index.html"
         }),
         new CopyPlugin({
             patterns: [
-                 { from: './pictures', to: './pictures' },
+                 { from: './src/pictures', to: './pictures' },
             ],
         }),
     ]
