@@ -3,8 +3,6 @@ import {Player} from "./Models/Player.js";
 import {Fence} from "./Models/Fence.js";
 import {Heal} from "./Models/Heal.js";
 import {Fuel} from "./Models/Fuel.js";
-import {Random} from "./Services/Random.js";
-import {Overlappable} from "./Services/Overlappable.js";
 
 const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy', 'blue_light', 'blue_medium', 'fence', 'red_cross', 'fuel', 'heal'];
 
@@ -84,7 +82,7 @@ function init() {
     bluePlayer = new Player('blue');
     players.push(bluePlayer);
     players.push(redPlayer);
-    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], ctx));
+    bluePlayer.addTank(new Tank(500, 150, 'blue', 'light', 'right', images['blue_light'], ctx));
     bluePlayer.addTank(new Tank(110, 300, 'blue', 'medium', 'right', images['blue_medium'], ctx));
     bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], ctx));
     redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], ctx));
