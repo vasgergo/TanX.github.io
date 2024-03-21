@@ -6,16 +6,17 @@ import {Fuel} from "./Models/Fuel.js";
 
 const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy', 'blue_light', 'blue_medium', 'fence', 'red_cross', 'fuel', 'heal'];
 
-let CANVAS_WIDTH = 1100;
-let CANVAS_HEIGHT = 650;
+let CANVAS_WIDTH = document.getElementById('myCanvas').width;
+let CANVAS_HEIGHT = document.getElementById('myCanvas').height;
 let WINDOW_WIDTH = window.innerWidth;
 let WINDOW_HEIGHT = window.innerHeight;
+const ORIGINAL_WINDOW_WIDTH = 1536;
+const ORIGINAL_WINDOW_HEIGHT = 703;
 let ctx;
 let canvas;
 let redPlayer;
 let bluePlayer;
 let players = [];
-let testTank;
 let images = [];
 let isAimInProgress = false;
 let allTanks = [];
@@ -33,13 +34,14 @@ let allOverlappables = [];
 
 window.onload = function () {
     loadImages();
+    setGameContainerSizeAndPosition();
 }
 
 function loadImages() {
     function loadPngByName(imageName) {
         return new Promise((resolve) => {
             let img = new Image();
-            img.src = './pictures/' + imageName + '.png';
+            img.src = './Pictures/' + imageName + '.png';
             img.onload = () => {
                 images[imageName] = img
                 resolve();
@@ -64,11 +66,7 @@ function loadImages() {
 function init() {
     canvas = document.getElementById('myCanvas');
     ctx = canvas.getContext('2d');
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
-    //center the canvas
-    canvas.style.left = ((WINDOW_WIDTH - CANVAS_WIDTH) / 2) - 5 + 'px';
-    canvas.style.top = ((WINDOW_HEIGHT - CANVAS_HEIGHT) / 2) - 5 + 'px';
+
 
     Heal.image = images['heal'];
     Fuel.image = images['fuel'];
@@ -82,7 +80,7 @@ function init() {
     bluePlayer = new Player('blue');
     players.push(bluePlayer);
     players.push(redPlayer);
-    bluePlayer.addTank(new Tank(500, 150, 'blue', 'light', 'right', images['blue_light'], ctx));
+    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], ctx));
     bluePlayer.addTank(new Tank(110, 300, 'blue', 'medium', 'right', images['blue_medium'], ctx));
     bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], ctx));
     redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], ctx));
@@ -128,8 +126,6 @@ function init() {
         allFuels.push(Fuel.randomFuel(allOverlappables));
 
 
-
-
     }
 
     //it's needed to start with blue player
@@ -139,6 +135,11 @@ function init() {
 }
 
 function startGame() {
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            // menu
+        }
+    });
     console.log('game started');
     updateFrame();
     nextRound();
@@ -521,4 +522,32 @@ function linear(x, param1, param2) {
 
 function sinus(x, param1, param2) {
     return -Math.sin(x / param2) * param1;
+}
+
+function setGameContainerSizeAndPosition() {
+    let gameContainer = document.getElementById('gameContainer');
+
+    let window_width = window.innerWidth;
+    let window_height = window.innerHeight;
+    let centerOfWindowWidth = window_width / 2;
+    let centerOfWindowHeight = window_height / 2;
+
+    let width_scale = Number((window_width / ORIGINAL_WINDOW_WIDTH).toFixed(3));
+    let height_scale = Number((window_height / ORIGINAL_WINDOW_HEIGHT).toFixed(3));
+
+    let scale = Math.min(width_scale, height_scale);
+
+    let gameContainerCurr_width = scale * ORIGINAL_WINDOW_WIDTH;
+
+    let gameContainerCurr_height = scale * ORIGINAL_WINDOW_HEIGHT;
+
+    gameContainer.style.scale = scale.toString();
+
+    gameContainer.style.top = centerOfWindowHeight - (gameContainerCurr_height / 2) + 'px';
+    gameContainer.style.left = centerOfWindowWidth - (gameContainerCurr_width / 2) + 'px';
+
+}
+
+window.onresize = function () {
+    setGameContainerSizeAndPosition();
 }

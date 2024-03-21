@@ -1,4 +1,4 @@
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
@@ -20,6 +20,18 @@ module.exports = {
                 use: {
                     loader: "babel-loader"
                 }
+            },
+            //reload when html modified
+            {
+                test: /\.html$/,
+                use: {
+                    loader: "html-loader",
+                }
+
+            },
+            {
+                test: /\.css$/,
+                use: ["style-loader", "css-loader"]
             },
             {
                 test: [/\.vert$/, /\.frag$/],
@@ -50,7 +62,7 @@ module.exports = {
         }),
         new CopyPlugin({
             patterns: [
-                { from: './src/pictures', to: './pictures' },
+                {from: './src/pictures', to: './pictures'},
             ],
         }),
     ]
