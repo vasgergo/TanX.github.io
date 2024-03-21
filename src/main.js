@@ -3,7 +3,6 @@ import {Player} from "./Models/Player.js";
 import {Fence} from "./Models/Fence.js";
 import {Heal} from "./Models/Heal.js";
 import {Fuel} from "./Models/Fuel.js";
-import './Menu/menu.css';
 
 const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy', 'blue_light', 'blue_medium', 'fence', 'red_cross', 'fuel', 'heal'];
 
