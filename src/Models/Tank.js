@@ -116,9 +116,6 @@ export class Tank {
             }
 
             updateFrame();
-            console.log('destinationAngle: ', destinationAngle);
-            console.log('angle: ', this.angle);
-            // console.log('rotationDirection: ', rotationDirection);
             if (this.angle === destinationAngle) {
                 console.log('clear');
                 clearInterval(interval);
