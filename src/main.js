@@ -25,7 +25,7 @@ let activePlayer;
 let activeTank;
 let allFences = [];
 let seconds = 0;
-const ROUND_TIME = 30;
+const ROUND_TIME = 10;
 const TIME_AFTER_COLLOSION = 1000;
 let timer;
 let allHeals = [];
@@ -182,19 +182,23 @@ function nextRound() {
 
     // Move & aim control
     window.addEventListener('keydown', moveAimControl);
-
-
     timer = setInterval(() => {
-        window.document.getElementById('timer').innerText = seconds.toFixed(1);
-        if (seconds <= 0.1) {
+        if (seconds <= 5){
+            window.document.getElementById('timer').style.color = 'red';
+        } else {
+            window.document.getElementById('timer').style.color = 'black';
+        }
+        if (seconds <= 0) {
             console.log('time is up');
             clearInterval(timer);
             endRound();
             setTimeout(() => {
                 nextRound();
             }, 1000);
+        } else {
+            window.document.getElementById('timer').innerText = seconds.toFixed(1);
+            seconds -= 0.1;
         }
-        seconds -= 0.1;
     }, 100);
     activeTank.aimFunction = sinus;
     isAimInProgress = true;

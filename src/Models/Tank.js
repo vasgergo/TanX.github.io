@@ -47,6 +47,10 @@ export class Tank {
 
         }
 
+        this.img.width = this.width;
+        this.img.height = this.height;
+
+
         this.aimParams = {
             p1: 70,
             p2: 25,
@@ -158,7 +162,6 @@ export class Tank {
         }
 
 
-
         //check if there is a heal in the way
         for (let i = 0; i < allHeals.length; i++) {
             if (allHeals[i].isOverlap(tankClone)) {
@@ -224,7 +227,7 @@ export class Tank {
         this.context.save();
         this.context.translate(this.x + this.img.width / 2, this.y + this.img.height / 2);
         this.context.rotate(angle * Math.PI / 180);
-        this.context.drawImage(this.img, -this.img.width / 2, -this.img.height / 2);
+        this.context.drawImage(this.img, -this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
         this.context.restore();
     }
 }
