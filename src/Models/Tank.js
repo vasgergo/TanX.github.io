@@ -1,4 +1,3 @@
-import {Overlappable} from "../Services/Overlappable.js";
 
 export class Tank {
 

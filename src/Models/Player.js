@@ -15,7 +15,6 @@ export class Player {
             this.tankIndex = 0;
         }
         while(this.tanks[this.tankIndex].isCrashed){
-            console.log('Ncrashed');
             this.tankIndex++;
             if (this.tankIndex >= this.tanks.length) {
                 this.tankIndex = 0;

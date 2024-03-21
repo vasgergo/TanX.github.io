@@ -4,10 +4,10 @@ import {Overlappable} from "../Services/Overlappable.js";
 export class Fence {
     static image;
 
-    constructor(x, y, type, blockSzie) {
+    constructor(x, y, type, blockSize) {
         this.x = x;
         this.y = y;
-        this.blockSzie = blockSzie;
+        this.blockSzie = blockSize;
         this.type = type;
         this.array = [];
 

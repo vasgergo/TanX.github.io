@@ -9,8 +9,6 @@ const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy
 
 let CANVAS_WIDTH = document.getElementById('myCanvas').width;
 let CANVAS_HEIGHT = document.getElementById('myCanvas').height;
-let WINDOW_WIDTH = window.innerWidth;
-let WINDOW_HEIGHT = window.innerHeight;
 const ORIGINAL_WINDOW_WIDTH = 1536;
 const ORIGINAL_WINDOW_HEIGHT = 703;
 let ctx;
@@ -26,7 +24,7 @@ let activeTank;
 let allFences = [];
 let seconds = 0;
 const ROUND_TIME = 10;
-const TIME_AFTER_COLLOSION = 1000;
+const TIME_AFTER_COLLISION = 1000;
 let timer;
 let allHeals = [];
 let allFuels = [];
@@ -177,8 +175,8 @@ function nextRound() {
         document.getElementById('blueActiveTankImg').src = images['red_cross'].src;
     }
 
-    // Rotiation control
-    window.addEventListener('keypress', roationControl);
+    // Rotation control
+    window.addEventListener('keypress', rotationControl);
 
     // Move & aim control
     window.addEventListener('keydown', moveAimControl);
@@ -195,7 +193,7 @@ function nextRound() {
             endRound();
             setTimeout(() => {
                 nextRound();
-            }, TIME_AFTER_COLLOSION);
+            }, TIME_AFTER_COLLISION);
         } else {
             window.document.getElementById('timer').innerText = seconds.toFixed(1);
             seconds -= 0.1;
@@ -228,7 +226,7 @@ function updateInfoPanelTankColor() {
 function endRound() {
     clearInterval(timer);
     window.removeEventListener('keydown', moveAimControl);
-    window.removeEventListener('keypress', roationControl);
+    window.removeEventListener('keypress', rotationControl);
 }
 
 function moveAimControl(e) {
@@ -265,10 +263,10 @@ function moveAimControl(e) {
     updateFrame()
 }
 
-function roationControl(e) {
+function rotationControl(e) {
     if (e.key === '8' || e.key === '6' || e.key === '2' || e.key === '4') {
         isAimInProgress = false;
-        window.removeEventListener('keypress', roationControl);
+        window.removeEventListener('keypress', rotationControl);
         window.removeEventListener('keydown', moveAimControl);
         console.log('key removed');
     }
@@ -291,7 +289,7 @@ function roationControl(e) {
         if (seconds !== ROUND_TIME) {
             isAimInProgress = true;
             updateFrame();
-            window.addEventListener('keypress', roationControl);
+            window.addEventListener('keypress', rotationControl);
             window.addEventListener('keydown', moveAimControl);
         }
     }
@@ -340,7 +338,7 @@ function shoot(tankParam) {
     let destX;
     let destY;
     let intervalCounter = 0;
-    let collosionResult;
+    let collisionResult;
     let interval = setInterval(() => {
         ctx.drawImage(images['desert'], 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         allTanks.forEach((tank) => {
@@ -366,18 +364,18 @@ function shoot(tankParam) {
                 destX = x + angleMultiplierY * func(i, param1, param2);
                 destY = y + angleMultiplierX2 * i
             }
-            collosionResult = collosion(destX, destY);
-            if (collosionResult.bool) {
+            collisionResult = collision(destX, destY);
+            if (collisionResult.bool) {
                 ctx.lineTo(destX, destY);
                 ctx.stroke();
                 ctx.closePath();
                 clearInterval(interval);
-                if (collosionResult.tank !== null) {
-                    collosionResult.tank.getDamage(activeTank.damage);
+                if (collisionResult.tank !== null) {
+                    collisionResult.tank.getDamage(activeTank.damage);
                 }
                 setTimeout(() => {
                     nextRound();
-                }, TIME_AFTER_COLLOSION);
+                }, TIME_AFTER_COLLISION);
                 return;//very important
             }
 
@@ -390,7 +388,7 @@ function shoot(tankParam) {
                     clearInterval(interval);
                     setTimeout(() => {
                         nextRound();
-                    }, TIME_AFTER_COLLOSION);
+                    }, TIME_AFTER_COLLISION);
                     return;
                 }
             }
@@ -506,15 +504,13 @@ function nextPlayer() {
     }
 }
 
-function collosion(x, y) {
+function collision(x, y) {
     if (x < 0 || x > CANVAS_WIDTH || y < 0 || y > CANVAS_HEIGHT) {
-        console.log('wall collosion!');
         return {bool: true, tank: null};
     }
     for (let i = 0; i < allTanks.length; i++) {
         let tank = allTanks[i];
         if (x > tank.x && x < tank.x + tank.img.width && y > tank.y && y < tank.y + tank.img.height) {
-            console.log('tankcollosion!');
             //returns bool value and the tank that was hit in object
             return {bool: true, tank: tank};
         }
