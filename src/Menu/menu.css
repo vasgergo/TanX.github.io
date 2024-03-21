@@ -1,19 +1,19 @@
 #menu {
+    /*display: block;*/
     display: none;
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 100px;
+    left: 500px;
     width: 500px;
     height: 350px;
     color: red;
-    border: black 1px solid;
+    border: black 5px solid;
     border-radius: 10px;
     background-color: aqua;
     z-index: 2;
-    /*hide element*/
 
 }
+
 #menu h1 {
     text-align: center;
     margin-top: 10px;

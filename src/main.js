@@ -168,7 +168,7 @@ function nextRound() {
     updateInfoPanels();
     //set all tank class div background to red
     updateInfoPanelTankColor();
-    document.getElementById(activeTank.team + '_' + activeTank.type).style.backgroundColor = 'green';
+    document.getElementById(activeTank.team + '_' + activeTank.type).style.backgroundColor = 'lightgreen';
     if (activePlayer.color === 'blue') {
         document.getElementById('blueActiveTankImg').src = activeTank.img.src;
         document.getElementById('redActiveTankImg').src = images['red_cross'].src;
@@ -189,12 +189,13 @@ function nextRound() {
             window.document.getElementById('timer').style.color = 'black';
         }
         if (seconds <= 0) {
+            window.document.getElementById('timer').innerText = '0.0';
             console.log('time is up');
             clearInterval(timer);
             endRound();
             setTimeout(() => {
                 nextRound();
-            }, 1000);
+            }, TIME_AFTER_COLLOSION);
         } else {
             window.document.getElementById('timer').innerText = seconds.toFixed(1);
             seconds -= 0.1;
