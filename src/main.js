@@ -223,16 +223,16 @@ function nextRound() {
             activeTank.move('right', allFences, allTanks, allHeals, allFuels, canvas);
         }
         if (pressed_down_keys['ArrowUp']) {
-            activeTank.aimParams.p1 += 1;
+            activeTank.addToAimParams(1, 0);
         }
         if (pressed_down_keys['ArrowDown']) {
-            activeTank.aimParams.p1 -= 1;
+            activeTank.addToAimParams(-1, 0);
         }
         if (pressed_down_keys['ArrowLeft']) {
-            activeTank.aimParams.p2 -= 1;
+            activeTank.addToAimParams(0, -1)
         }
         if (pressed_down_keys['ArrowRight']) {
-            activeTank.aimParams.p2 += 1;
+            activeTank.addToAimParams(0, 1)
         }
         updateFrame();
     }
@@ -259,6 +259,7 @@ function botTurn() {
         counter++;
         updateFrame();
     }
+
     let asd = setInterval(moveDown, 1000 / 50);
 }
 
@@ -285,6 +286,9 @@ function rotationAndShootControl(e) {
             break;
         case '4':
             activeTank.rotationAnimation(270, updateFrame, callback);
+            break;
+        case"5":
+            activeTank.changeReflection();
             break;
         case 'Enter':
             shoot(activeTank);
@@ -408,63 +412,21 @@ function shoot(tankParam) {
 }
 
 function drawAim(tankParam) {
-    let angleMultiplierX;
-    let angleMultiplierY;
-    let reverse;
-    let x;
-    let y;
-    let shootFunction = tankParam.aimFunction;
-    let param1 = tankParam.aimParams.p1;
-    let param2 = tankParam.aimParams.p2;
-    switch (activeTank.angle) {
-        case 0:
-            x = activeTank.x + activeTank.img.width / 2;
-            y = activeTank.y;
-            angleMultiplierX = -1;
-            angleMultiplierY = 1;
-            reverse = true;
-            break;
-        case 90:
-            x = activeTank.x + activeTank.img.width;
-            y = activeTank.y + activeTank.img.height / 2;
-            angleMultiplierX = 1;
-            angleMultiplierY = 1;
-            reverse = false;
-            break;
-        case 180:
-            x = activeTank.x + activeTank.img.width / 2;
-            y = activeTank.y + activeTank.img.height;
-            angleMultiplierX = 1;
-            angleMultiplierY = 1;
-            reverse = true;
-            break;
-        case 270:
-            x = activeTank.x;
-            y = activeTank.y + activeTank.img.height / 2;
-            angleMultiplierX = -1;
-            angleMultiplierY = -1;
-            reverse = false;
-            break;
-    }
-
+    tankParam.updateAimParams();
     ctx.beginPath();
     ctx.strokeStyle = 'red';
     ctx.lineWidth = 2;
-    ctx.moveTo(x, y);
-    let prevX = x;
-    let prevY = y;
+    ctx.moveTo(tankParam.aimParams.startX, tankParam.aimParams.startY);
+    let prevX = tankParam.aimParams.startX;
+    let prevY = tankParam.aimParams.startY;
     let destX;
     let destY;
     let allDistance = 0;
     let maxDistance = 500;
     for (let i = 0; allDistance < maxDistance; i++) {
-        if (!reverse) {
-            destX = x + angleMultiplierX * i;
-            destY = y + angleMultiplierY * shootFunction(i, param1, param2);
-        } else {
-            destX = x + angleMultiplierY * shootFunction(i, param1, param2);
-            destY = y + angleMultiplierX * i
-        }
+        destX = tankParam.shootFunction(i).x;
+        destY = tankParam.shootFunction(i).y;
+
         allDistance += Math.sqrt(Math.pow(destX - prevX, 2) + Math.pow(destY - prevY, 2));
         prevX = destX;
         prevY = destY;

@@ -1,5 +1,4 @@
 export class Tank {
-
     constructor(x, y, team, type, direction, image, context) {
         this.x = x;
         this.y = y;
@@ -55,13 +54,19 @@ export class Tank {
         this.img.width = this.width;
         this.img.height = this.height;
 
-
         this.aimParams = {
-            p1: 70,
-            p2: 25,
+            p1: 50,
+            p2: 50,
+            reflection: 1,
+
+            angleMultiplierX: undefined,
+            angleMultiplierY: undefined,
+            reverse: undefined,
+            startX: undefined,
+            startY: undefined,
+
+
         }
-
-
 
         this.angle = 0;
         switch (this.direction) {
@@ -79,9 +84,91 @@ export class Tank {
                 break;
         }
 
-        this.aimFunction;
-
         this.isCrashed = false;
+    }
+
+    static paramInterval = {
+        p1: {
+            min: 30,
+            max: 70,
+        },
+        p2: {
+            min: 30,
+            max: 100,
+        }
+    }
+
+    addToAimParams(p1, p2) {
+        if (this.aimParams.p1 + p1 < Tank.paramInterval.p1.min || this.aimParams.p1 + p1 > Tank.paramInterval.p1.max || this.aimParams.p2 + p2 < Tank.paramInterval.p2.min || this.aimParams.p2 + p2 > Tank.paramInterval.p2.max) {
+            console.log('Out of range');
+        } else {
+            this.aimParams.p1 += p1;
+            this.aimParams.p2 += p2;
+        }
+    }
+
+    setAimParams(p1, p2) {
+        if (p1 < Tank.paramInterval.p1.min || p1 > Tank.paramInterval.p1.max || p2 < Tank.paramInterval.p2.min || p2 > Tank.paramInterval.p2.max) {
+            console.log('Out of range');
+        } else {
+            this.aimParams.p1 = p1;
+            this.aimParams.p2 = p2;
+        }
+    }
+
+    updateAimParams() {
+        switch (this.angle) {
+            case 0:
+                this.aimParams.startX = this.x + this.img.width / 2;
+                this.aimParams.startY = this.y;
+                this.aimParams.angleMultiplierX = -1;
+                this.aimParams.angleMultiplierY = -1;
+                this.aimParams.reverse = true;
+                break;
+            case 90:
+                this.aimParams.startX = this.x + this.img.width;
+                this.aimParams.startY = this.y + this.img.height / 2;
+                this.aimParams.angleMultiplierX = 1;
+                this.aimParams.angleMultiplierY = -1;
+                this.aimParams.reverse = false;
+                break;
+            case 180:
+                this.aimParams.startX = this.x + this.img.width / 2;
+                this.aimParams.startY = this.y + this.img.height;
+                this.aimParams.angleMultiplierX = 1;
+                this.aimParams.angleMultiplierY = 1;
+                this.aimParams.reverse = true;
+                break;
+            case 270:
+                this.aimParams.startX = this.x;
+                this.aimParams.startY = this.y + this.img.height / 2;
+                this.aimParams.angleMultiplierX = -1;
+                this.aimParams.angleMultiplierY = 1;
+                this.aimParams.reverse = false;
+                break;
+        }
+
+    }
+
+    shootFunction(distanceFromStartPoint) {
+        let result = {
+            x: undefined,
+            y: undefined,
+        }
+
+        if (this.aimParams.reverse) {
+            result.x = this.aimParams.startX + this.aimParams.angleMultiplierY * this.aimParams.reflection * Math.sin(distanceFromStartPoint / this.aimParams.p2) * this.aimParams.p1;
+            result.y = this.aimParams.startY + this.aimParams.angleMultiplierX * distanceFromStartPoint;
+        } else {
+            result.x = this.aimParams.startX + this.aimParams.angleMultiplierX * distanceFromStartPoint;
+            result.y = this.aimParams.startY + this.aimParams.angleMultiplierY * this.aimParams.reflection * Math.sin(distanceFromStartPoint / this.aimParams.p2) * this.aimParams.p1;
+        }
+        return result;
+    }
+
+    changeReflection() {
+        console.log('Reflection');
+        this.aimParams.reflection = -1 * this.aimParams.reflection;
     }
 
     rotationAnimation(destinationAngle, updateFrame, callback) {
