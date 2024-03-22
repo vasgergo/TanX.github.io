@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>TanX</title>
     <style>
 
@@ -68,6 +69,35 @@
     // document.getElementById("settings").addEventListener("click", function () {
     //     window.location.href = "settings.html";
     // });
+
+
+
+
+
+    let keys = {};
+
+    window.addEventListener('keydown', (e) => {
+        keys[e.key] = true;
+        handleKeyPress();
+    });
+
+    window.addEventListener('keyup', (e) => {
+        keys[e.key] = false;
+        handleKeyPress();
+    });
+
+    function handleKeyPress() {
+        for (let key in keys) {
+            if (keys[key]) {
+                console.log(`Key pressed: ${key}`);
+            }
+        }
+    }
+
+
+
+
+
 </script>
 </body>
 </html>

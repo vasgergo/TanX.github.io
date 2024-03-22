@@ -1,4 +1,3 @@
-
 export class Tank {
 
     constructor(x, y, team, type, direction, image, context) {
@@ -17,15 +16,19 @@ export class Tank {
         this.fuel = undefined;
         this.consumption = undefined;
         this.damage = undefined;
+        this.roationSpeed = undefined;
+        this.roationSpeed = undefined;
 
         switch (this.type) {
             case 'light':
                 this.width = 30;
                 this.height = 30;
                 this.health = 10;
-                this.fuel = 50;
+                this.fuel = 500;
                 this.consumption = 20;
                 this.damage = 10;
+                this.speed = 1;
+                this.roationSpeed = 5;
                 break;
             case 'medium':
                 this.width = 45;
@@ -34,6 +37,8 @@ export class Tank {
                 this.fuel = 100;
                 this.consumption = 30;
                 this.damage = 30;
+                this.speed = 1;
+                this.roationSpeed = 2;
                 break;
             case 'heavy':
                 this.width = 60;
@@ -42,8 +47,9 @@ export class Tank {
                 this.fuel = 150;
                 this.consumption = 40;
                 this.damage = 50;
+                this.speed = 1;
+                this.roationSpeed = 1;
                 break;
-
         }
 
         this.img.width = this.width;
@@ -55,31 +61,7 @@ export class Tank {
             p2: 25,
         }
 
-        this.speed = 0;
-        switch (this.type) {
-            case 'light':
-                this.speed = 3;
-                break;
-            case 'medium':
-                this.speed = 2;
-                break;
-            case 'heavy':
-                this.speed = 1;
-                break;
-        }
 
-        this.roationSpeed = 0;
-        switch (this.type) {
-            case 'light':
-                this.roationSpeed = 5;
-                break;
-            case 'medium':
-                this.roationSpeed = 2;
-                break;
-            case 'heavy':
-                this.roationSpeed = 1;
-                break;
-        }
 
         this.angle = 0;
         switch (this.direction) {
