@@ -1,6 +1,7 @@
 export class Player {
-    constructor(color) {
+    constructor(color, isBot = false) {
         this.color = color;
+        this.isBot = isBot;
         this.tanks = [];
         this.tankIndex = -1;
     }

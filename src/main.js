@@ -11,6 +11,8 @@ let CANVAS_WIDTH = document.getElementById('myCanvas').width;
 let CANVAS_HEIGHT = document.getElementById('myCanvas').height;
 const ORIGINAL_WINDOW_WIDTH = 1536;
 const ORIGINAL_WINDOW_HEIGHT = 703;
+const urlParams = new URLSearchParams(window.location.search);
+const GAME_MODE = urlParams.get('playerMode');
 let ctx;
 let canvas;
 let redPlayer;
@@ -22,14 +24,16 @@ let allTanks = [];
 let activePlayer;
 let activeTank;
 let allFences = [];
-let seconds = 0;
 const ROUND_TIME = 10;
 const TIME_AFTER_COLLISION = 1000;
-let timer;
+
+//TIMER
+let timerInterval;
+let timerSeconds;
+
 let allHeals = [];
 let allFuels = [];
 let allOverlappables = [];
-
 
 window.onload = function () {
     loadImages();
@@ -123,8 +127,6 @@ function init() {
         allOverlappables.push(allFences);
         allHeals.push(Heal.randomHeal(allOverlappables));
         allFuels.push(Fuel.randomFuel(allOverlappables));
-
-
     }
 
     //it's needed to start with blue player
@@ -141,7 +143,7 @@ function startGame() {
     });
     console.log('game started');
     updateFrame();
-    nextRound();
+    startNextRound();
 }
 
 function updateInfoPanels() {
@@ -158,8 +160,10 @@ function updateInfoPanels() {
     }
 }
 
-function nextRound() {
-    seconds = ROUND_TIME;
+function startNextRound() {
+    let pressEnter = window.document.getElementById('pressEnter');
+    timerSeconds = ROUND_TIME;
+    window.document.getElementById('timer').innerText = timerSeconds.toFixed(1);
     activePlayer = nextPlayer();
     activeTank = activePlayer.nextTank();
     console.log('->Active player is: ' + activePlayer.color + ' tank: ' + activeTank.type);
@@ -175,30 +179,49 @@ function nextRound() {
         document.getElementById('blueActiveTankImg').src = images['red_cross'].src;
     }
 
+    pressEnter.style.display = 'flex';
+
+    window.addEventListener('keypress', goNextRound);
+
+    function goNextRound(e) {
+        if (e.key === 'Enter') {
+            pressEnter.style.display = 'none';
+            window.removeEventListener('keypress', goNextRound);
+            nextRound();
+        }
+    }
+}
+
+function timer(){
+    if (timerSeconds <= 5) {
+        window.document.getElementById('timer').style.color = 'red';
+    } else {
+        window.document.getElementById('timer').style.color = 'black';
+    }
+    if (timerSeconds <= 0) {
+        window.document.getElementById('timer').innerText = '0.0';
+        console.log('time is up');
+        clearInterval(timerInterval);
+        endRound();
+        setTimeout(() => {
+            startNextRound();
+        }, TIME_AFTER_COLLISION);
+    } else {
+        window.document.getElementById('timer').innerText = timerSeconds.toFixed(1);
+        timerSeconds -= 0.1;
+    }
+}
+
+function nextRound() {
+
     // Rotation control
     window.addEventListener('keypress', rotationControl);
 
     // Move & aim control
     window.addEventListener('keydown', moveAimControl);
-    timer = setInterval(() => {
-        if (seconds <= 5){
-            window.document.getElementById('timer').style.color = 'red';
-        } else {
-            window.document.getElementById('timer').style.color = 'black';
-        }
-        if (seconds <= 0) {
-            window.document.getElementById('timer').innerText = '0.0';
-            console.log('time is up');
-            clearInterval(timer);
-            endRound();
-            setTimeout(() => {
-                nextRound();
-            }, TIME_AFTER_COLLISION);
-        } else {
-            window.document.getElementById('timer').innerText = seconds.toFixed(1);
-            seconds -= 0.1;
-        }
-    }, 100);
+
+    timerInterval = setInterval(timer , 100);//start timer
+
     activeTank.aimFunction = sinus;
     isAimInProgress = true;
 
@@ -224,7 +247,7 @@ function updateInfoPanelTankColor() {
 }
 
 function endRound() {
-    clearInterval(timer);
+    clearInterval(timerInterval);
     window.removeEventListener('keydown', moveAimControl);
     window.removeEventListener('keypress', rotationControl);
 }
@@ -286,7 +309,7 @@ function rotationControl(e) {
     }
 
     function callback() {
-        if (seconds !== ROUND_TIME) {
+        if (timerSeconds !== ROUND_TIME) {
             isAimInProgress = true;
             updateFrame();
             window.addEventListener('keypress', rotationControl);
@@ -374,7 +397,7 @@ function shoot(tankParam) {
                     collisionResult.tank.getDamage(activeTank.damage);
                 }
                 setTimeout(() => {
-                    nextRound();
+                    startNextRound();
                 }, TIME_AFTER_COLLISION);
                 return;//very important
             }
@@ -387,7 +410,7 @@ function shoot(tankParam) {
                     ctx.closePath();
                     clearInterval(interval);
                     setTimeout(() => {
-                        nextRound();
+                        startNextRound();
                     }, TIME_AFTER_COLLISION);
                     return;
                 }
@@ -516,10 +539,6 @@ function collision(x, y) {
         }
     }
     return false;
-}
-
-function linear(x, param1, param2) {
-    return -x * param1 / 100;
 }
 
 function sinus(x, param1, param2) {
