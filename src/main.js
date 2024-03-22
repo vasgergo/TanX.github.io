@@ -95,6 +95,7 @@ function init() {
 
     //create players
     redPlayer = new Player('red');
+    redPlayer.isBot = true;
     bluePlayer = new Player('blue');
     players.push(bluePlayer);
     players.push(redPlayer);
@@ -161,20 +162,6 @@ function startGame() {
     startNextRound();
 }
 
-function updateInfoPanels() {
-    let actualTankColor;
-    let actualTankType;
-    for (let i = 0; i < allTanks.length; i++) {
-        actualTankColor = allTanks[i].team;
-        actualTankType = allTanks[i].type;
-        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'health').innerText = allTanks[i].health;
-        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'fuel').innerText = allTanks[i].fuel.toFixed(1);
-        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'consumption').innerText = allTanks[i].consumption;
-        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'damage').innerText = allTanks[i].damage;
-
-    }
-}
-
 function startNextRound() {
     let pressEnter = window.document.getElementById('pressEnter');
     timerSeconds = ROUND_TIME;
@@ -208,8 +195,12 @@ function startNextRound() {
 }
 
 function nextRound() {
-    // Rotation control
-    window.addEventListener('keypress', rotationAndShootControl);
+    if (activePlayer.isBot) {
+        botTurn();
+    } else {
+        moveAndAimInterval = setInterval(aimAndMove, 1000 / 50);
+        window.addEventListener('keypress', rotationAndShootControl);
+    }
 
     timerInterval = setInterval(timer, 100);//start timer
 
@@ -217,7 +208,6 @@ function nextRound() {
 
     isAimInProgress = true;
 
-    moveAndAimInterval = setInterval(aimAndMove, 1000 / 50);
 
     function aimAndMove() {
         if (pressed_down_keys['w']) {
@@ -251,6 +241,25 @@ function nextRound() {
     // allFuels.push(Fuel.randomFuel(allOverlappables));
 
     updateFrame()
+}
+
+function botTurn() {
+    console.log('bot turns');
+
+    let counter = 0;
+
+    function moveDown() {
+        if (counter === 50) {
+            clearInterval(asd);
+            clearInterval(timerInterval);
+            shoot(activeTank);
+        } else {
+            activeTank.move('down', allFences, allTanks, allHeals, allFuels, canvas);
+        }
+        counter++;
+        updateFrame();
+    }
+    let asd = setInterval(moveDown, 1000 / 50);
 }
 
 function endRound() {
@@ -561,6 +570,20 @@ function menuOpen() {
 function menuClose() {
     let menu = document.getElementById('menu');
     menu.style.display = 'none';
+}
+
+function updateInfoPanels() {
+    let actualTankColor;
+    let actualTankType;
+    for (let i = 0; i < allTanks.length; i++) {
+        actualTankColor = allTanks[i].team;
+        actualTankType = allTanks[i].type;
+        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'health').innerText = allTanks[i].health;
+        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'fuel').innerText = allTanks[i].fuel.toFixed(1);
+        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'consumption').innerText = allTanks[i].consumption;
+        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'damage').innerText = allTanks[i].damage;
+
+    }
 }
 
 window.onresize = function () {
