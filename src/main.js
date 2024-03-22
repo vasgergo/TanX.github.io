@@ -260,21 +260,32 @@ function nextRound() {
 function botTurn() {
     console.log('bot turns');
 
-    let counter = 0;
 
-    function moveDown() {
-        if (counter === 50) {
-            clearInterval(asd);
-            clearInterval(timerInterval);
-            shoot(activeTank);
-        } else {
-            activeTank.move('down', allFences, allTanks, allHeals, allFuels, canvas);
+    for (let i = Tank.paramInterval.p1.min; i <=Tank.paramInterval.p1.max ; i++) {
+        for (let j = Tank.paramInterval.p2.min; j <= Tank.paramInterval.p2.max; j++) {
+            activeTank.setAimParams(i, j);
+            if (shootResult() instanceof Tank) {
+                shoot(activeTank);
+                return;
+            }
         }
-        counter++;
-        updateFrame();
     }
 
-    let asd = setInterval(moveDown, 1000 / 50);
+    // let counter = 0;
+    //
+    // function moveDown() {
+    //     if (counter === 50) {
+    //         clearInterval(asd);
+    //         clearInterval(timerInterval);
+    //         shoot(activeTank);
+    //     } else {
+    //         activeTank.move('down', allFences, allTanks, allHeals, allFuels, canvas);
+    //     }
+    //     counter++;
+    //     updateFrame();
+    // }
+    //
+    // let asd = setInterval(moveDown, 1000 / 50);
 }
 
 function endRound() {
@@ -555,4 +566,19 @@ function setGameContainerSizeAndPosition() {
     gameContainer.style.top = centerOfWindowHeight - (gameContainerCurr_height / 2) + 'px';
     gameContainer.style.left = centerOfWindowWidth - (gameContainerCurr_width / 2) + 'px';
 
+}
+
+function shootResult() {
+    let destX;
+    let destY;
+    let distance = 0;
+    while (true) {
+        distance++;
+        destX = activeTank.shootFunction(distance).x;
+        destY = activeTank.shootFunction(distance).y;
+        let objectAtPoint = objectAt(destX, destY);
+        if (objectAtPoint !== undefined) {
+            return objectAtPoint;
+        }
+    }
 }

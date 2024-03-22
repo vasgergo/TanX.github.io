@@ -89,12 +89,16 @@ export class Tank {
 
     static paramInterval = {
         p1: {
-            min: 40,
-            max: 120,
+            // min: 40,
+            // max: 120,
+            min: 10,
+            max: 250,
         },
         p2: {
-            min: 30,
-            max: 100,
+            // min: 30,
+            // max: 100,
+            min: 10,
+            max: 250,
         }
     }
 
