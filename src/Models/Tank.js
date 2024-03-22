@@ -89,8 +89,8 @@ export class Tank {
 
     static paramInterval = {
         p1: {
-            min: 30,
-            max: 70,
+            min: 40,
+            max: 120,
         },
         p2: {
             min: 30,
@@ -167,7 +167,6 @@ export class Tank {
     }
 
     changeReflection() {
-        console.log('Reflection');
         this.aimParams.reflection = -1 * this.aimParams.reflection;
     }
 

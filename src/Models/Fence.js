@@ -142,7 +142,6 @@ export class Fence {
 
     }
 
-
     draw(ctx) {
         for (const block in this.array) {
             if (this.array[block].exist) {

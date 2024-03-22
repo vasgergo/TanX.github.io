@@ -36,6 +36,5 @@ export class Overlappable {
                 param1.y < param2.y + param2.height &&
                 param1.y + param1.height > param2.y;
         }
-
     }
 }

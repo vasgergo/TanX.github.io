@@ -3,6 +3,7 @@ import {Player} from "./Models/Player.js";
 import {Fence} from "./Models/Fence.js";
 import {Heal} from "./Models/Heal.js";
 import {Fuel} from "./Models/Fuel.js";
+// import {Overlappable} from "./Services/Overlappable.js";
 // import './Menu/menu.css';
 
 const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy', 'blue_light', 'blue_medium', 'fence', 'red_cross', 'fuel', 'heal'];
@@ -34,6 +35,7 @@ let timerInterval;
 let timerSeconds;
 
 let moveAndAimInterval;
+let shootInterval;
 
 let allHeals = [];
 let allFuels = [];
@@ -195,6 +197,10 @@ function startNextRound() {
 }
 
 function nextRound() {
+    isAimInProgress = true;
+
+    updateFrame()
+
     if (activePlayer.isBot) {
         botTurn();
     } else {
@@ -206,41 +212,49 @@ function nextRound() {
 
     activeTank.aimFunction = sinus;
 
-    isAimInProgress = true;
-
 
     function aimAndMove() {
+        let isUpdated = false;
         if (pressed_down_keys['w']) {
             activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
+            isUpdated = true;
         }
         if (pressed_down_keys['s']) {
             activeTank.move('down', allFences, allTanks, allHeals, allFuels, canvas);
+            isUpdated = true;
         }
         if (pressed_down_keys['a']) {
             activeTank.move('left', allFences, allTanks, allHeals, allFuels, canvas);
+            isUpdated = true;
         }
         if (pressed_down_keys['d']) {
             activeTank.move('right', allFences, allTanks, allHeals, allFuels, canvas);
+            isUpdated = true;
         }
         if (pressed_down_keys['ArrowUp']) {
             activeTank.addToAimParams(1, 0);
+            isUpdated = true;
         }
         if (pressed_down_keys['ArrowDown']) {
             activeTank.addToAimParams(-1, 0);
+            isUpdated = true;
         }
         if (pressed_down_keys['ArrowLeft']) {
-            activeTank.addToAimParams(0, -1)
+            activeTank.addToAimParams(0, -1);
+            isUpdated = true;
         }
         if (pressed_down_keys['ArrowRight']) {
-            activeTank.addToAimParams(0, 1)
+            activeTank.addToAimParams(0, 1);
+            isUpdated = true;
         }
-        updateFrame();
+        if (isUpdated) {
+            updateFrame();
+        }
     }
 
     // allHeals.push(Heal.randomHeal(allOverlappables));
     // allFuels.push(Fuel.randomFuel(allOverlappables));
 
-    updateFrame()
 }
 
 function botTurn() {
@@ -264,6 +278,7 @@ function botTurn() {
 }
 
 function endRound() {
+    isAimInProgress = false;
     clearInterval(moveAndAimInterval);
     clearInterval(timerInterval);
     window.removeEventListener('keypress', rotationAndShootControl);
@@ -289,10 +304,11 @@ function rotationAndShootControl(e) {
             break;
         case"5":
             activeTank.changeReflection();
+            updateFrame();
             break;
         case 'Enter':
-            shoot(activeTank);
             endRound()
+            shoot(activeTank);
             break;
     }
 
@@ -305,109 +321,75 @@ function rotationAndShootControl(e) {
     }
 }
 
-function shoot(tankParam) {
-    console.log('shoot!');
-    let angleMultiplierX2;
-    let angleMultiplierY;
-    let reverse;
-    let x;
-    let y;
-    let func = tankParam.aimFunction;
-    let param1 = tankParam.aimParams.p1;
-    let param2 = tankParam.aimParams.p2;
-    switch (tankParam.angle) {
-        case 0:
-            x = tankParam.x + tankParam.img.width / 2;
-            y = tankParam.y;
-            angleMultiplierX2 = -1;
-            angleMultiplierY = 1;
-            reverse = true;
-            break;
-        case 90:
-            x = tankParam.x + tankParam.img.width;
-            y = tankParam.y + tankParam.img.height / 2;
-            angleMultiplierX2 = 1;
-            angleMultiplierY = 1;
-            reverse = false;
-            break;
-        case 180:
-            x = tankParam.x + tankParam.img.width / 2;
-            y = tankParam.y + tankParam.img.height;
-            angleMultiplierX2 = 1;
-            angleMultiplierY = 1;
-            reverse = true;
-            break;
-        case 270:
-            x = tankParam.x;
-            y = tankParam.y + tankParam.img.height / 2;
-            angleMultiplierX2 = -1;
-            angleMultiplierY = -1;
-            reverse = false;
-            break;
+function objectAt(x, y) {
+    if (x < 0 || x > CANVAS_WIDTH || y < 0 || y > CANVAS_HEIGHT) {
+        return "wall";
     }
+    for (let i = 0; i < allFences.length; i++) {
+        if (allFences[i].isCollide(x, y)) {
+            return allFences[i];
+        }
+    }
+    for (let i = 0; i < allTanks.length; i++) {
+        if (allTanks[i].x < x && allTanks[i].x + allTanks[i].img.width > x && allTanks[i].y < y && allTanks[i].y + allTanks[i].img.height > y) {
+            return allTanks[i];
+        }
+    }
+    return undefined;
+}
+
+function shoot(tankParam) {
+    isAimInProgress = false;
+    updateFrame();
+    console.log('shoot');
+    let distance = 0;
+    let maxDistance = 2000;
+    ctx.beginPath();
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 1;
+    ctx.moveTo(tankParam.aimParams.startX, tankParam.aimParams.startY);
+    ctx.stroke();
+
     let destX;
     let destY;
-    let intervalCounter = 0;
-    let collisionResult;
-    let interval = setInterval(() => {
-        ctx.drawImage(images['desert'], 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        allTanks.forEach((tank) => {
-            tank.draw();
-        });
-        allFences.forEach((fence) => {
-            fence.draw(ctx);
-        });
-        allFuels.forEach((fuel) => {
-            fuel.draw();
-        });
-        allHeals.forEach((heal) => {
-            heal.draw();
-        });
-        ctx.beginPath();
-        ctx.lineWidth = 2;
-        ctx.moveTo(x, y);
-        for (let i = 0; i < intervalCounter; i++) {
-            if (!reverse) {
-                destX = x + angleMultiplierX2 * i;
-                destY = y + angleMultiplierY * func(i, param1, param2);
-            } else {
-                destX = x + angleMultiplierY * func(i, param1, param2);
-                destY = y + angleMultiplierX2 * i
-            }
-            collisionResult = collision(destX, destY);
-            if (collisionResult.bool) {
-                ctx.lineTo(destX, destY);
-                ctx.stroke();
-                ctx.closePath();
-                clearInterval(interval);
-                if (collisionResult.tank !== null) {
-                    collisionResult.tank.getDamage(activeTank.damage);
-                }
+    let objectAtPoint;
+
+    shootInterval = setInterval(() => {
+        distance += 1;
+
+        console.log('shoot interval');
+
+        destX = tankParam.shootFunction(distance).x;
+        destY = tankParam.shootFunction(distance).y;
+
+        ctx.lineTo(destX, destY);
+        ctx.stroke();
+
+        objectAtPoint = objectAt(destX, destY);
+
+        if (!objectAtPoint) {
+        } else if (objectAtPoint === 'wall') {
+            clearInterval(shootInterval);
+            setTimeout(() => {
+                startNextRound();
+            }, TIME_AFTER_COLLISION);
+        } else if (objectAtPoint instanceof Tank) {
+            if (objectAtPoint !== tankParam) {
+                objectAtPoint.getDamage(tankParam.damage);
+                clearInterval(shootInterval);
                 setTimeout(() => {
                     startNextRound();
                 }, TIME_AFTER_COLLISION);
-                return;//very important
             }
-
-            for (let j = 0; j < allFences.length; j++) {
-                if (allFences[j].isCollide(destX, destY)) {
-                    allFences[j].demolish(destX, destY);
-                    ctx.lineTo(destX, destY);
-                    ctx.stroke();
-                    ctx.closePath();
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        startNextRound();
-                    }, TIME_AFTER_COLLISION);
-                    return;
-                }
-            }
-
-            ctx.lineTo(destX, destY);
+        } else if (objectAtPoint instanceof Fence) {
+            objectAtPoint.demolish(destX, destY);
+            clearInterval(shootInterval);
+            clearInterval(shootInterval);
+            setTimeout(() => {
+                startNextRound();
+            }, TIME_AFTER_COLLISION);
         }
-        ctx.stroke();
-        ctx.closePath();
-        intervalCounter++;
+
     }, 1);
 }
 
@@ -437,9 +419,8 @@ function drawAim(tankParam) {
 }
 
 function updateFrame() {
-
+    console.log('update frame');
     ctx.drawImage(images['desert'], 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
 
     if (isAimInProgress) {
         drawAim(activeTank);
