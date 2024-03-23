@@ -116,7 +116,7 @@ function init() {
         });
     });
 
-    let randomInit = false;
+    let randomInit = true;
 
     allOverlappables.push(allFences, allHeals, allFuels, allTanks);
 
