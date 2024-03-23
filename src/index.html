@@ -6,9 +6,10 @@
     <title>TanX</title>
     <style>
 
-        html{
+        html {
             font-family: "Times new roman", sans-serif;
         }
+
         body {
             background-color: darkgreen;
         }
@@ -47,21 +48,25 @@
 <body>
 <div id="mainMenu">
     <h1>TanX</h1>
+    <!--    redirect to game.html-->
     <button id="pvp">Player VS Player</button>
     <button id="pvc">Player VS Computer</button>
-    <button id="htp">How to play</button>
-    <button id="settings">Settings</button>
+    <button id="htp" disabled>How to play</button>
+    <button id="settings" disabled>Settings</button>
 </div>
 
 <script>
     document.getElementById("pvp").addEventListener("click", function () {
+
         window.location.href = "game.html?playerMode=pvp";
+
+
     });
 
     document.getElementById("pvc").addEventListener("click", function () {
         window.location.href = "game.html?playerMode=pvc";
     });
-
+    //
     // document.getElementById("htp").addEventListener("click", function () {
     //     window.location.href = "howtoplay.html";
     // });
@@ -69,9 +74,6 @@
     // document.getElementById("settings").addEventListener("click", function () {
     //     window.location.href = "settings.html";
     // });
-
-
-
 
 
     let keys = {};
@@ -93,9 +95,6 @@
             }
         }
     }
-
-
-
 
 
 </script>

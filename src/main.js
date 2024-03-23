@@ -27,7 +27,7 @@ let activeTank;
 let allFences = [];
 const ROUND_TIME = 30;
 const TIME_AFTER_COLLISION = 1000;
-
+console.log(GAME_MODE);
 let pressed_down_keys = {};
 
 //TIMER
@@ -97,7 +97,9 @@ function init() {
 
     //create players
     redPlayer = new Player('red');
-    redPlayer.isBot = true;
+    if (GAME_MODE === 'pvc') {
+        redPlayer.isBot = true;
+    }
     bluePlayer = new Player('blue');
     players.push(bluePlayer);
     players.push(redPlayer);
