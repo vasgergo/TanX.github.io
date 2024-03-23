@@ -22,9 +22,9 @@ export class Tank {
             case 'light':
                 this.width = 30;
                 this.height = 30;
-                this.health = 10;
-                this.fuel = 500;
-                this.consumption = 20;
+                this.health = 50;
+                this.fuel = 100;
+                this.consumption = 10;
                 this.damage = 10;
                 this.speed = 1;
                 this.roationSpeed = 5;
@@ -32,19 +32,19 @@ export class Tank {
             case 'medium':
                 this.width = 45;
                 this.height = 45;
-                this.health = 10;
-                this.fuel = 100;
+                this.health = 75;
+                this.fuel = 150;
                 this.consumption = 30;
-                this.damage = 30;
+                this.damage = 25;
                 this.speed = 1;
                 this.roationSpeed = 2;
                 break;
             case 'heavy':
                 this.width = 60;
                 this.height = 60;
-                this.health = 10;
-                this.fuel = 150;
-                this.consumption = 40;
+                this.health = 100;
+                this.fuel = 200;
+                this.consumption = 50;
                 this.damage = 50;
                 this.speed = 1;
                 this.roationSpeed = 1;

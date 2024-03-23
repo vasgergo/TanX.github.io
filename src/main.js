@@ -198,7 +198,24 @@ function startNextRound() {
     }
 }
 
+function gameOver() {
+    let redAlive = false;
+    let blueAlive = false;
+    for (let i = 0; i < allTanks.length; i++) {
+        if (allTanks[i].team === 'red' && !allTanks[i].isCrashed) {
+            redAlive = true;
+        }
+        if (allTanks[i].team === 'blue' && !allTanks[i].isCrashed) {
+            blueAlive = true;
+        }
+    }
+    return !redAlive || !blueAlive;
+}
+
 function nextRound() {
+    if (gameOver()){
+        window.location.href = 'index.html';
+    }
     isAimInProgress = true;
 
     updateFrame()
@@ -254,8 +271,8 @@ function nextRound() {
         }
     }
 
-    // allHeals.push(Heal.randomHeal(allOverlappables));
-    // allFuels.push(Fuel.randomFuel(allOverlappables));
+    allHeals.push(Heal.randomHeal(allOverlappables));
+    allFuels.push(Fuel.randomFuel(allOverlappables));
 
 }
 
