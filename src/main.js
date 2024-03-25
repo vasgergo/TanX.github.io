@@ -13,7 +13,7 @@ let CANVAS_HEIGHT = document.getElementById('myCanvas').height;
 const ORIGINAL_WINDOW_WIDTH = 1536;
 const ORIGINAL_WINDOW_HEIGHT = 703;
 const urlParams = new URLSearchParams(window.location.search);
-const GAME_MODE = urlParams.get('playerMode');
+const GAME_MODE = window.sessionStorage.getItem("playerMode")
 let ctx;
 let canvas;
 let redPlayer;
@@ -278,8 +278,6 @@ function nextRound() {
 
 function botTurn() {
     console.log('bot turns');
-
-
     for (let i = Tank.paramInterval.p1.min; i <=Tank.paramInterval.p1.max ; i++) {
         for (let j = Tank.paramInterval.p2.min; j <= Tank.paramInterval.p2.max; j++) {
             activeTank.setAimParams(i, j);

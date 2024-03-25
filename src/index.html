@@ -57,45 +57,14 @@
 
 <script>
     document.getElementById("pvp").addEventListener("click", function () {
-
-        window.location.href = "game.html?playerMode=pvp";
-
-
+        window.sessionStorage.setItem("playerMode", "pvp");
+        window.location.href = "game.html";
     });
 
     document.getElementById("pvc").addEventListener("click", function () {
-        window.location.href = "game.html?playerMode=pvc";
+        window.sessionStorage.setItem("playerMode", "pvc");
+        window.location.href = "game.html";
     });
-    //
-    // document.getElementById("htp").addEventListener("click", function () {
-    //     window.location.href = "howtoplay.html";
-    // });
-    //
-    // document.getElementById("settings").addEventListener("click", function () {
-    //     window.location.href = "settings.html";
-    // });
-
-
-    let keys = {};
-
-    window.addEventListener('keydown', (e) => {
-        keys[e.key] = true;
-        handleKeyPress();
-    });
-
-    window.addEventListener('keyup', (e) => {
-        keys[e.key] = false;
-        handleKeyPress();
-    });
-
-    function handleKeyPress() {
-        for (let key in keys) {
-            if (keys[key]) {
-                console.log(`Key pressed: ${key}`);
-            }
-        }
-    }
-
 
 </script>
 </body>
