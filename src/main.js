@@ -264,31 +264,16 @@ function nextRound() {
 function botTurn() {
     console.log('bot turns');
 
-    let isOk = false;
-    let shootOptions;
-    while (true) {
-        shootOptions = getShootOptions();
-        if (shootOptions.number === 0) {
-            console.log('no shoot options');
-            for (let i = 0; i < 100; i++) {
-                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
-                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
-                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
-                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
-                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
-                updateFrame();
-                if (getShootOptions().number > 0) {
-                    break;
-                }
-            }
-        } else {
-            isOk = true;
-            activeTank.setAimParams(shootOptions.p1[0], shootOptions.p2[0]);
-            clearInterval(timerInterval);
-            shoot(activeTank);
-            break
-        }
+    let shootOptions = getShootOptions();
+    if (shootOptions.number) {
+        console.log("van option");
+        activeTank.aimParams.p1 = shootOptions.p1[0];
+        activeTank.aimParams.p2 = shootOptions.p2[0];
+    } else {
+        console.log("nincs opció");
     }
+    endRound();
+    shoot(activeTank);
 
 
     function getShootOptions() {
