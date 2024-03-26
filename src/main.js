@@ -124,9 +124,9 @@ function init() {
 
     if (!randomInit) {
 
-        allFences.push(new Fence(350, 100, 'normal_y', 10));
-        allFences.push(new Fence(350, 400, 'normal_y', 10));
-        allFences.push(new Fence(700, 100, 'normal_y', 10));
+        // allFences.push(new Fence(350, 100, 'normal_y', 10));
+        // allFences.push(new Fence(350, 400, 'normal_y', 10));
+        // allFences.push(new Fence(700, 100, 'normal_y', 10));
         allFences.push(new Fence(700, 400, 'normal_y', 10));
         allFences.push(new Fence(480, 250, 'tank_trap', 10));
 
@@ -167,69 +167,58 @@ function startGame() {
 }
 
 function startNextRound() {
-    let pressEnter = window.document.getElementById('pressEnter');
-    timerSeconds = ROUND_TIME;
-    window.document.getElementById('timer').innerText = timerSeconds.toFixed(1);
-    activePlayer = nextPlayer();
-    activeTank = activePlayer.nextTank();
-    console.log('->Active player is: ' + activePlayer.color + ' tank: ' + activeTank.type);
-    updateInfoPanels();
-    //set all tank class div background to red
-    updateInfoPanelTankColor();
-    document.getElementById(activeTank.team + '_' + activeTank.type).style.backgroundColor = 'lightgreen';
-    if (activePlayer.color === 'blue') {
-        document.getElementById('blueActiveTankImg').src = activeTank.img.src;
-        document.getElementById('redActiveTankImg').src = images['red_cross'].src;
+    if (redPlayer.isLose() || bluePlayer.isLose()) {
+        console.log('game over');
+        window.location.href = 'index.html';
     } else {
-        document.getElementById('redActiveTankImg').src = activeTank.img.src;
-        document.getElementById('blueActiveTankImg').src = images['red_cross'].src;
-    }
+        let pressEnter = window.document.getElementById('pressEnter');
+        timerSeconds = ROUND_TIME;
+        window.document.getElementById('timer').innerText = timerSeconds.toFixed(1);
+        activePlayer = nextPlayer();
+        activeTank = activePlayer.nextTank();
+        console.log('->Active player is: ' + activePlayer.color + ' tank: ' + activeTank.type);
+        updateInfoPanels();
+        //set all tank class div background to red
+        updateInfoPanelTankColor();
+        document.getElementById(activeTank.team + '_' + activeTank.type).style.backgroundColor = 'lightgreen';
+        if (activePlayer.color === 'blue') {
+            document.getElementById('blueActiveTankImg').src = activeTank.img.src;
+            document.getElementById('redActiveTankImg').src = images['red_cross'].src;
+        } else {
+            document.getElementById('redActiveTankImg').src = activeTank.img.src;
+            document.getElementById('blueActiveTankImg').src = images['red_cross'].src;
+        }
 
-    pressEnter.style.display = 'flex';
+        pressEnter.style.display = 'flex';
 
-    window.addEventListener('keypress', goNextRound);
+        window.addEventListener('keypress', goNextRound);
 
-    function goNextRound(e) {
-        if (e.key === 'Enter') {
-            pressEnter.style.display = 'none';
-            window.removeEventListener('keypress', goNextRound);
-            nextRound();
+        function goNextRound(e) {
+            if (e.key === 'Enter') {
+                pressEnter.style.display = 'none';
+                window.removeEventListener('keypress', goNextRound);
+                nextRound();
+            }
         }
     }
-}
-
-function gameOver() {
-    let redAlive = false;
-    let blueAlive = false;
-    for (let i = 0; i < allTanks.length; i++) {
-        if (allTanks[i].team === 'red' && !allTanks[i].isCrashed) {
-            redAlive = true;
-        }
-        if (allTanks[i].team === 'blue' && !allTanks[i].isCrashed) {
-            blueAlive = true;
-        }
-    }
-    return !redAlive || !blueAlive;
 }
 
 function nextRound() {
-    if (gameOver()){
-        window.location.href = 'index.html';
-    }
     isAimInProgress = true;
-
+    allHeals.push(Heal.randomHeal(allOverlappables));
+    allFuels.push(Fuel.randomFuel(allOverlappables));
     updateFrame()
 
+    timerInterval = setInterval(timer, 100);//start timer
+
     if (activePlayer.isBot) {
-        botTurn();
+        setTimeout(() => {
+            botTurn();
+        }, 1000);
     } else {
         moveAndAimInterval = setInterval(aimAndMove, 1000 / 50);
         window.addEventListener('keypress', rotationAndShootControl);
     }
-
-    timerInterval = setInterval(timer, 100);//start timer
-
-    activeTank.aimFunction = sinus;
 
 
     function aimAndMove() {
@@ -270,46 +259,62 @@ function nextRound() {
             updateFrame();
         }
     }
-
-    allHeals.push(Heal.randomHeal(allOverlappables));
-    allFuels.push(Fuel.randomFuel(allOverlappables));
-
 }
 
 function botTurn() {
     console.log('bot turns');
-    for (let i = Tank.paramInterval.p1.min; i <=Tank.paramInterval.p1.max ; i++) {
-        for (let j = Tank.paramInterval.p2.min; j <= Tank.paramInterval.p2.max; j++) {
-            activeTank.setAimParams(i, j);
-            if (shootResult() instanceof Tank) {
-                shoot(activeTank);
-                return;
+
+    let isOk = false;
+    let shootOptions;
+    while (true) {
+        shootOptions = getShootOptions();
+        if (shootOptions.number === 0) {
+            console.log('no shoot options');
+            for (let i = 0; i < 100; i++) {
+                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
+                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
+                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
+                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
+                activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
+                updateFrame();
+                if (getShootOptions().number > 0) {
+                    break;
+                }
             }
+        } else {
+            isOk = true;
+            activeTank.setAimParams(shootOptions.p1[0], shootOptions.p2[0]);
+            clearInterval(timerInterval);
+            shoot(activeTank);
+            break
         }
     }
 
-    // let counter = 0;
-    //
-    // function moveDown() {
-    //     if (counter === 50) {
-    //         clearInterval(asd);
-    //         clearInterval(timerInterval);
-    //         shoot(activeTank);
-    //     } else {
-    //         activeTank.move('down', allFences, allTanks, allHeals, allFuels, canvas);
-    //     }
-    //     counter++;
-    //     updateFrame();
-    // }
-    //
-    // let asd = setInterval(moveDown, 1000 / 50);
+
+    function getShootOptions() {
+        let p1Arr = [];
+        let p2Arr = [];
+        for (let i = Tank.paramInterval.p1.min; i <= Tank.paramInterval.p1.max; i++) {
+            for (let j = Tank.paramInterval.p2.min; j <= Tank.paramInterval.p2.max; j++) {
+                let shootRes = shootResult();
+                activeTank.setAimParams(i, j);
+                if (shootRes instanceof Tank && shootRes.team !== activeTank.team) {
+                    p1Arr.push(i);
+                    p2Arr.push(j);
+                }
+            }
+        }
+        return {p1: p1Arr, p2: p2Arr, number: p1Arr.length};
+    }
 }
 
 function endRound() {
     isAimInProgress = false;
-    clearInterval(moveAndAimInterval);
+    if (!activePlayer.isBot) {
+        clearInterval(moveAndAimInterval);
+        window.removeEventListener('keypress', rotationAndShootControl);
+    }
     clearInterval(timerInterval);
-    window.removeEventListener('keypress', rotationAndShootControl);
 }
 
 function rotationAndShootControl(e) {
@@ -432,7 +437,7 @@ function drawAim(tankParam) {
     let destX;
     let destY;
     let allDistance = 0;
-    let maxDistance = 500;
+    let maxDistance = 200;
     for (let i = 0; allDistance < maxDistance; i++) {
         destX = tankParam.shootFunction(i).x;
         destY = tankParam.shootFunction(i).y;
@@ -481,26 +486,11 @@ function nextPlayer() {
     }
 }
 
-function collision(x, y) {
-    if (x < 0 || x > CANVAS_WIDTH || y < 0 || y > CANVAS_HEIGHT) {
-        return {bool: true, tank: null};
-    }
-    for (let i = 0; i < allTanks.length; i++) {
-        let tank = allTanks[i];
-        if (x > tank.x && x < tank.x + tank.img.width && y > tank.y && y < tank.y + tank.img.height) {
-            //returns bool value and the tank that was hit in object
-            return {bool: true, tank: tank};
-        }
-    }
-    return false;
-}
-
-function sinus(x, param1, param2) {
-    return -Math.sin(x / param2) * param1;
-}
 
 function timer() {
     if (timerSeconds <= 5) {
+        // start beep sound
+
         window.document.getElementById('timer').style.color = 'red';
     } else {
         window.document.getElementById('timer').style.color = 'black';
@@ -512,6 +502,7 @@ function timer() {
         endRound();
         setTimeout(() => {
             startNextRound();
+            endRound();
         }, TIME_AFTER_COLLISION);
     } else {
         window.document.getElementById('timer').innerText = timerSeconds.toFixed(1);

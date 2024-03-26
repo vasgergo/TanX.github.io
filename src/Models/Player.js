@@ -4,6 +4,7 @@ export class Player {
         this.isBot = isBot;
         this.tanks = [];
         this.tankIndex = -1;
+
     }
 
     addTank(tank) {
@@ -22,6 +23,17 @@ export class Player {
             }
         }
         return this.tanks[this.tankIndex];
+    }
+
+    isLose(){
+        let lose = true;
+        for(let i = 0; i < this.tanks.length; i++){
+            if(!this.tanks[i].isCrashed){
+                lose = false;
+                break;
+            }
+        }
+        return lose;
     }
 
 }

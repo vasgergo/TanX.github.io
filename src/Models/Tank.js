@@ -22,7 +22,7 @@ export class Tank {
             case 'light':
                 this.width = 30;
                 this.height = 30;
-                this.health = 50;
+                this.health = 1;
                 this.fuel = 100;
                 this.consumption = 10;
                 this.damage = 10;
@@ -32,7 +32,7 @@ export class Tank {
             case 'medium':
                 this.width = 45;
                 this.height = 45;
-                this.health = 75;
+                this.health = 1;
                 this.fuel = 150;
                 this.consumption = 30;
                 this.damage = 25;
@@ -42,7 +42,7 @@ export class Tank {
             case 'heavy':
                 this.width = 60;
                 this.height = 60;
-                this.health = 100;
+                this.health = 1;
                 this.fuel = 200;
                 this.consumption = 50;
                 this.damage = 50;
@@ -64,9 +64,7 @@ export class Tank {
             reverse: undefined,
             startX: undefined,
             startY: undefined,
-
-
-        }
+                    }
 
         this.angle = 0;
         switch (this.direction) {
@@ -89,16 +87,16 @@ export class Tank {
 
     static paramInterval = {
         p1: {
-            // min: 40,
-            // max: 120,
-            min: 10,
-            max: 250,
+            min: 40,
+            max: 120,
+            // min: 10,
+            // max: 250,
         },
         p2: {
-            // min: 30,
-            // max: 100,
-            min: 10,
-            max: 250,
+            min: 30,
+            max: 100,
+            // min: 10,
+            // max: 250,
         }
     }
 
