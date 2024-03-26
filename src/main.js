@@ -116,7 +116,7 @@ function init() {
         });
     });
 
-    let randomInit = true;
+    let randomInit = false;
 
     allOverlappables.push(allFences, allHeals, allFuels, allTanks);
 
@@ -361,7 +361,6 @@ function shoot(tankParam) {
     updateFrame();
     console.log('shoot');
     let distance = 0;
-    let maxDistance = 2000;
     ctx.beginPath();
     ctx.strokeStyle = 'red';
     ctx.lineWidth = 1;
@@ -422,7 +421,7 @@ function drawAim(tankParam) {
     let destX;
     let destY;
     let allDistance = 0;
-    let maxDistance = 200;
+    let maxDistance = 500;
     for (let i = 0; allDistance < maxDistance; i++) {
         destX = tankParam.shootFunction(i).x;
         destY = tankParam.shootFunction(i).y;

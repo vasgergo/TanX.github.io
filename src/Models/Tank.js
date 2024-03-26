@@ -22,7 +22,9 @@ export class Tank {
             case 'light':
                 this.width = 30;
                 this.height = 30;
-                this.health = 1;
+                this.maxHealth = 50;
+                this.health = 50;
+                this.maxFuel = 100;
                 this.fuel = 100;
                 this.consumption = 10;
                 this.damage = 10;
@@ -32,7 +34,9 @@ export class Tank {
             case 'medium':
                 this.width = 45;
                 this.height = 45;
+                this.maxHealth = 1;
                 this.health = 1;
+                this.maxFuel = 150;
                 this.fuel = 150;
                 this.consumption = 30;
                 this.damage = 25;
@@ -42,7 +46,9 @@ export class Tank {
             case 'heavy':
                 this.width = 60;
                 this.height = 60;
+                this.maxHealth = 1;
                 this.health = 1;
+                this.maxFuel = 200;
                 this.fuel = 200;
                 this.consumption = 50;
                 this.damage = 50;
@@ -64,7 +70,7 @@ export class Tank {
             reverse: undefined,
             startX: undefined,
             startY: undefined,
-                    }
+        }
 
         this.angle = 0;
         switch (this.direction) {
@@ -296,7 +302,16 @@ export class Tank {
         this.context.save();
         this.context.translate(this.x + this.img.width / 2, this.y + this.img.height / 2);
         this.context.rotate(angle * Math.PI / 180);
+
+        this.context.fillStyle = 'green';
+        this.context.fillRect(-this.img.width / 2 - 5, this.img.width / 2, -5, -this.img.width * this.fuel / this.maxFuel); //y jobbra     x hatra    width jobbra   height hatra
+
+        this.context.fillStyle = 'red';
+
         this.context.drawImage(this.img, -this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
+
+        this.context.fillRect(this.img.width / 2 + 5, this.img.width / 2, 5, -this.img.width * this.health/this.maxHealth); //y jobbra     x hatra    width jobbra   height hatra
+
         this.context.restore();
     }
 }
