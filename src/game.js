@@ -12,7 +12,6 @@ let CANVAS_WIDTH = document.getElementById('myCanvas').width;
 let CANVAS_HEIGHT = document.getElementById('myCanvas').height;
 const ORIGINAL_WINDOW_WIDTH = 1536;
 const ORIGINAL_WINDOW_HEIGHT = 703;
-const urlParams = new URLSearchParams(window.location.search);
 const GAME_MODE = window.sessionStorage.getItem("playerMode")
 let ctx;
 let canvas;
@@ -124,9 +123,9 @@ function init() {
 
     if (!randomInit) {
 
-        // allFences.push(new Fence(350, 100, 'normal_y', 10));
-        // allFences.push(new Fence(350, 400, 'normal_y', 10));
-        // allFences.push(new Fence(700, 100, 'normal_y', 10));
+        allFences.push(new Fence(350, 100, 'normal_y', 10));
+        allFences.push(new Fence(350, 400, 'normal_y', 10));
+        allFences.push(new Fence(700, 100, 'normal_y', 10));
         allFences.push(new Fence(700, 400, 'normal_y', 10));
         allFences.push(new Fence(480, 250, 'tank_trap', 10));
 
@@ -414,7 +413,7 @@ function drawAim(tankParam) {
     tankParam.updateAimParams();
     ctx.beginPath();
     ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     ctx.moveTo(tankParam.aimParams.startX, tankParam.aimParams.startY);
     let prevX = tankParam.aimParams.startX;
     let prevY = tankParam.aimParams.startY;
@@ -469,7 +468,6 @@ function nextPlayer() {
         return redPlayer;
     }
 }
-
 
 function timer() {
     if (timerSeconds <= 5) {

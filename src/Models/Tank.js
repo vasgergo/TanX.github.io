@@ -22,11 +22,11 @@ export class Tank {
             case 'light':
                 this.width = 30;
                 this.height = 30;
-                this.maxHealth = 50;
-                this.health = 50;
+                this.maxHealth = 100;
+                this.health = 100;
                 this.maxFuel = 100;
                 this.fuel = 100;
-                this.consumption = 10;
+                this.consumption = 20;
                 this.damage = 10;
                 this.speed = 1;
                 this.roationSpeed = 5;
@@ -34,11 +34,11 @@ export class Tank {
             case 'medium':
                 this.width = 45;
                 this.height = 45;
-                this.maxHealth = 1;
-                this.health = 1;
+                this.maxHealth = 150;
+                this.health = 150;
                 this.maxFuel = 150;
                 this.fuel = 150;
-                this.consumption = 30;
+                this.consumption = 40;
                 this.damage = 25;
                 this.speed = 1;
                 this.roationSpeed = 2;
@@ -46,11 +46,11 @@ export class Tank {
             case 'heavy':
                 this.width = 60;
                 this.height = 60;
-                this.maxHealth = 1;
-                this.health = 1;
+                this.maxHealth = 200;
+                this.health = 200;
                 this.maxFuel = 200;
                 this.fuel = 200;
-                this.consumption = 50;
+                this.consumption = 80;
                 this.damage = 50;
                 this.speed = 1;
                 this.roationSpeed = 1;
@@ -93,16 +93,30 @@ export class Tank {
 
     static paramInterval = {
         p1: {
-            min: 40,
-            max: 120,
-            // min: 10,
-            // max: 250,
+            // min: 40,
+            // max: 120,
+            min: 10,
+            max: 250,
         },
         p2: {
-            min: 30,
-            max: 100,
-            // min: 10,
-            // max: 250,
+            // min: 30,
+            // max: 100,
+            min: 10,
+            max: 250,
+        }
+    }
+
+    addHealth(amount) {
+        this.health += amount;
+        if (this.health > this.maxHealth) {
+            this.health = this.maxHealth;
+        }
+    }
+
+    addFuel(amount) {
+        this.fuel += amount;
+        if (this.fuel > this.maxFuel) {
+            this.fuel = this.maxFuel;
         }
     }
 
@@ -240,9 +254,9 @@ export class Tank {
         //check if there is a heal in the way
         for (let i = 0; i < allHeals.length; i++) {
             if (allHeals[i].isOverlap(tankClone)) {
-                this.health += allHeals[i].amount;
+                this.addHealth(allHeals[i].amount);
 
-                //remove the from the array
+                //remove from the array
                 allHeals.splice(i, 1);
                 break;
             }
@@ -251,9 +265,9 @@ export class Tank {
         //check if there is a fuel in the way
         for (let i = 0; i < allFuels.length; i++) {
             if (allFuels[i].isOverlap(tankClone)) {
-                this.fuel += allFuels[i].amount;
+                this.addFuel(allFuels[i].amount);
 
-                //remove the from the array
+                //remove from the array
                 allFuels.splice(i, 1);
                 break;
             }
@@ -310,7 +324,7 @@ export class Tank {
 
         this.context.drawImage(this.img, -this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
 
-        this.context.fillRect(this.img.width / 2 + 5, this.img.width / 2, 5, -this.img.width * this.health/this.maxHealth); //y jobbra     x hatra    width jobbra   height hatra
+        this.context.fillRect(this.img.width / 2 + 5, this.img.width / 2, 5, -this.img.width * this.health / this.maxHealth); //y jobbra     x hatra    width jobbra   height hatra
 
         this.context.restore();
     }
