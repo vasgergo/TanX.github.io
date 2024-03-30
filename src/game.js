@@ -96,10 +96,12 @@ function init() {
 
     //create players
     redPlayer = new Player('red');
-    if (GAME_MODE === 'pvc') {
-        redPlayer.isBot = true;
-    }
     bluePlayer = new Player('blue');
+
+
+    if (GAME_MODE === 'pvc') {
+        bluePlayer.isBot = true;
+    }
     players.push(bluePlayer);
     players.push(redPlayer);
     bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], ctx));
@@ -203,22 +205,27 @@ function startNextRound() {
 }
 
 function nextRound() {
+    console.log('next round');
+    timerInterval = setInterval(timer, 100);//start timer
+
     isAimInProgress = true;
     allHeals.push(Heal.randomHeal(allOverlappables));
     allFuels.push(Fuel.randomFuel(allOverlappables));
     updateFrame()
 
-    timerInterval = setInterval(timer, 100);//start timer
-
     if (activePlayer.isBot) {
-        setTimeout(() => {
-            botTurn();
-        }, 1000);
+        let startTime = performance.now();
+
+        botTurn();
+        let endTime = performance.now();
+        let executionTime = endTime - startTime;
+
+        console.log("A kód futási ideje: " + executionTime.toFixed(0) + " milliszekundum.");
+
     } else {
         moveAndAimInterval = setInterval(aimAndMove, 1000 / 50);
         window.addEventListener('keypress', rotationAndShootControl);
     }
-
 
     function aimAndMove() {
         let isUpdated = false;
@@ -262,7 +269,20 @@ function nextRound() {
 
 function botTurn() {
     console.log('bot turns');
+    let path = getPathAStar(activeTank, 180, 170);
 
+    console.log(path);
+
+    for (let i = 0; i < path.length; i++) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'blue';
+        ctx.lineWidth = 1;
+        ctx.moveTo(path[i].x, path[i].y);
+        ctx.lineTo(path[i].x + 1, path[i].y + 1);
+        ctx.stroke();
+    }
+
+    /*
     let shootOptions = getShootOptions();
     if (shootOptions.number) {
         console.log("van option");
@@ -289,7 +309,121 @@ function botTurn() {
             }
         }
         return {p1: p1Arr, p2: p2Arr, number: p1Arr.length};
+    }*/
+}
+
+function getPathAStar(tank, destX, destY) {
+    console.log('getPathAStar');
+    console.log(tank.x, tank.y, destX, destY);
+
+    let openList = [];
+    let closedList = [];
+    let current;
+
+    openList.push({
+        x: tank.x,
+        y: tank.y,
+        dist: 0,
+        parent: null
+    });
+
+
+
+
+    let pfc = 0;
+    openList.pullFirst = function () {
+        pfc++;
+        ctx.beginPath();
+        ctx.strokeStyle = 'red';
+        ctx.fillRect(this[0].x, this[0].y, 1, 1);
+        ctx.stroke();
+
+        this.sort((a, b) => {
+            return a.dist + getHeuristic(a) - b.dist - getHeuristic(b);
+        });
+
+        return this.splice(0, 1)[0];
+    };
+
+    while (openList.length > 0) {
+        current = openList.pullFirst();
+        if (current.x === destX && current.y === destY) {
+            console.log("pfv: ", pfc);
+            ctx.beginPath();
+            ctx.strokeStyle = 'green';
+            ctx.lineWidth = 1;
+            ctx.moveTo(current.x, current.y);
+            ctx.lineTo(current.x + 1, current.y + 1);
+            ctx.stroke();
+            return linkedListToArray(current);
+        }
+        closedList.push(current);
+        let neighbours = getNeighbours(current);
+        for (let i = 0; i < neighbours.length; i++) {
+            if (!isOnList(openList, neighbours[i]) && (!isOnList(closedList, neighbours[i])) || current.cost + 1 < neighbours[i].cost) {
+                openList.push(neighbours[i]);
+                removeFromList(closedList, neighbours[i]);
+                neighbours[i].cost = current.cost + 1;
+                neighbours[i].parent = current;
+            }
+        }
     }
+    return "no path";
+
+    function getHeuristic(point) {
+        return Math.sqrt(Math.pow(point.x - destX, 2) + Math.pow(point.y - destY, 2));
+    }
+
+    function isOnList(list, point) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].x === point.x && list[i].y === point.y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function linkedListToArray(head) {
+        let path = [];
+        let temp = head;
+        while (temp) {
+            path.push(temp);
+            temp = temp.parent;
+        }
+        return path.reverse();
+    }
+
+    function removeFromList(list, point) {
+        for (let i = 0; i < list.length; i++) {
+            if (list[i].x === point.x && list[i].y === point.y) {
+                list.splice(i, 1);
+                return;
+            }
+        }
+    }
+
+    function getNeighbours(current) {
+        let neighbours = [];
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (i === 0 && j === 0) {
+                    continue;
+                }
+                for (let k = 0; k < allFences.length; k++) {
+                    if (!allFences[k].isOverlap({x: current.x + i, y: current.y + j, width:tank.width, height:tank.height})) {
+                        neighbours.push({
+                            x: current.x + i,
+                            y: current.y + j,
+                            dist: current.dist + 1,
+                            parent: current
+                        });
+                    }
+                }
+            }
+        }
+        return neighbours;
+    }
+
 }
 
 function endRound() {
@@ -572,3 +706,4 @@ function shootResult() {
         }
     }
 }
+

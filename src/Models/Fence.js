@@ -167,7 +167,7 @@ export class Fence {
     isOverlap(tank) {
         for (let i = 0; i < this.array.length; i++) {
             if (this.array[i].exist) {
-                if (tank.x < this.array[i].x + this.blockSzie && tank.x + tank.img.width > this.array[i].x && tank.y < this.array[i].y + this.blockSzie && tank.y + tank.img.height > this.array[i].y) {
+                if (tank.x < this.array[i].x + this.blockSzie && tank.x + tank.width > this.array[i].x && tank.y < this.array[i].y + this.blockSzie && tank.y + tank.height > this.array[i].y) {
                     return true;
                 }
             }
