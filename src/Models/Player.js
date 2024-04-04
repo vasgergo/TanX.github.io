@@ -4,7 +4,6 @@ export class Player {
         this.isBot = isBot;
         this.tanks = [];
         this.tankIndex = -1;
-
     }
 
     addTank(tank) {
@@ -35,5 +34,11 @@ export class Player {
         }
         return lose;
     }
+
+    calculateOptions(callback){
+        setTimeout(() => {
+            callback();
+        },5000);
+    };
 
 }

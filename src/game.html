@@ -128,20 +128,19 @@
             background-color: rgba(255, 255, 255, 0.3);
         }
 
-        #pressEnter {
+        #roundInfo {
             display: none;
-            /*display: flex;*/
             position: absolute;
             border-radius: 60px;
             top: 250px; /* approx 703/2 - 100  */
             left: 268px; /* 1536/2 - 400 */
+            text-align: center;
+            font-weight: bold;
+
             width: 1000px;
             height: 200px;
-            align-items: center;
-            justify-content: center;
-            transform-origin: center;
-            font-size: 35px;
-            font-weight: bold;
+            text-shadow: rgb(128, 128, 128, 0.2) 3px 3px 3px;
+
             color: rgb(255, 255, 255, 0.6);
             background-color: rgba(144, 238, 144, 0.6);
             box-shadow: 0 0 0 10px rgba(144, 238, 144, 0.2),
@@ -151,12 +150,40 @@
             0 0 0 50px rgba(144, 238, 144, 0.10),
             0 0 0 60px rgba(144, 238, 144, 0.05),
             0 0 0 65px rgba(144, 238, 144, 0.02);
-
             z-index: 1;
         }
 
-        #pressEnter h1 {
-            transform: scaleY(1.5);
+        #nextPlayer {
+            font-size: 50px;
+            margin-top: 20px;
+        }
+
+        #pressEnter {
+            font-size: 40px;
+            margin-top: 40px;
+            font-style: italic;
+        }
+        #aiThinking {
+            font-size: 40px;
+            margin-top: 40px;
+            /*legyen dőlt*/
+        }
+
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 3s infinite;
         }
     </style>
 </head>
@@ -165,8 +192,9 @@
     <div id="menu">
         <h1>Menu</h1>
     </div>
-    <div id="pressEnter">
-        <h1>Press Enter for next round!</h1>
+    <div id="roundInfo">
+        <div id="nextPlayer">Next player is: <span id="nextPlayerColor">blue</span></div>
+        <div id="pressEnter" class="pulse"></div>
     </div>
     <div id="timer"></div>
     <div id="bluePanel" class="panel">

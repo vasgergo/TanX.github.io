@@ -52,7 +52,8 @@ function loadImages() {
     sounds = {
         'fence_bumm': new Audio('./Sounds/fence_bumm.mp3'),
         'tank_fire': new Audio('./Sounds/tank_fire.mp3'),
-        'aiming': new Audio('./Sounds/aiming.mp3')
+        'aiming': new Audio('./Sounds/aiming.mp3'),
+        'ai_thinking': new Audio('./Sounds/ai_thinking.mp3'),
     }
 
     function loadPngByName(imageName) {
@@ -181,7 +182,8 @@ function startNextRound() {
         console.log('game over');
         window.location.href = 'index.html';
     } else {
-        let pressEnter = window.document.getElementById('pressEnter');
+        let roundInfo = window.document.getElementById('roundInfo');
+        let nextPlayerColor = window.document.getElementById('nextPlayerColor');
         timerSeconds = ROUND_TIME;
         window.document.getElementById('timer').innerText = timerSeconds.toFixed(1);
         activePlayer = nextPlayer();
@@ -194,18 +196,37 @@ function startNextRound() {
         if (activePlayer.color === 'blue') {
             document.getElementById('blueActiveTankImg').src = activeTank.img.src;
             document.getElementById('redActiveTankImg').src = images['red_cross'].src;
+            nextPlayerColor.style.color = 'blue';
+            nextPlayerColor.innerText = 'blue';
         } else {
             document.getElementById('redActiveTankImg').src = activeTank.img.src;
             document.getElementById('blueActiveTankImg').src = images['red_cross'].src;
+            nextPlayerColor.style.color = 'red';
+            nextPlayerColor.innerText = 'red';
+        }
+        let pressEnter = document.getElementById('pressEnter');
+        if (activePlayer.isBot) {
+            sounds['ai_thinking'].play();
+            pressEnter.innerText = 'AI is thinking...';
+
+            activePlayer.calculateOptions(callback);
+
+            function callback() {
+                sounds['ai_thinking'].pause();
+                sounds['ai_thinking'].currentTime = 0;
+                pressEnter.innerText = 'Ai is ready, press enter to start next round';
+                window.addEventListener('keypress', goNextRound);
+            }
+        } else {
+            pressEnter.innerText = 'Press enter to start next round';
+            window.addEventListener('keypress', goNextRound);
         }
 
-        pressEnter.style.display = 'flex';
-
-        window.addEventListener('keypress', goNextRound);
+        roundInfo.style.display = 'initial';
 
         function goNextRound(e) {
             if (e.key === 'Enter') {
-                pressEnter.style.display = 'none';
+                roundInfo.style.display = 'none';
                 window.removeEventListener('keypress', goNextRound);
                 nextRound();
             }
