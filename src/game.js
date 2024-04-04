@@ -268,31 +268,41 @@ function nextRound() {
 }
 
 function botTurn() {
+
     console.log('bot turns');
-    let path = getPathAStar(activeTank, 180, 170);
+    setTimeout(() => {
+        endRound();
+        startNextRound();
+    },2000);
 
-    console.log(path);
+    // let options = [];
+    //
+    // options.push(
+    //     {
+    //         path: getPathAStar(activeTank, 200, 170),
+    //         aimParams: {p1: 20, p2: 20, reflection: false},
+    //         score: 0
+    //     }
+    // );
+    //
+    // playOption(options[0]);
+    //
+    // function playOption(option) {
+    //
+    // }
 
-    for (let i = 0; i < path.length; i++) {
-        ctx.beginPath();
-        ctx.strokeStyle = 'blue';
-        ctx.lineWidth = 1;
-        ctx.moveTo(path[i].x, path[i].y);
-        ctx.lineTo(path[i].x + 1, path[i].y + 1);
-        ctx.stroke();
-    }
-
-    /*
-    let shootOptions = getShootOptions();
-    if (shootOptions.number) {
-        console.log("van option");
-        activeTank.aimParams.p1 = shootOptions.p1[0];
-        activeTank.aimParams.p2 = shootOptions.p2[0];
-    } else {
-        console.log("nincs opció");
-    }
-    endRound();
-    shoot(activeTank);
+    // let path = getPathAStar(activeTank, 500, 170);
+    //
+    // console.log(path);
+    //
+    // for (let i = 0; i < path.length; i++) {
+    //     ctx.beginPath();
+    //     ctx.strokeStyle = 'blue';
+    //     ctx.lineWidth = 1;
+    //     ctx.moveTo(path[i].x, path[i].y);
+    //     ctx.lineTo(path[i].x + 1, path[i].y + 1);
+    //     ctx.stroke();
+    // }
 
 
     function getShootOptions() {
@@ -309,7 +319,7 @@ function botTurn() {
             }
         }
         return {p1: p1Arr, p2: p2Arr, number: p1Arr.length};
-    }*/
+    }
 }
 
 function getPathAStar(tank, destX, destY) {
@@ -326,8 +336,6 @@ function getPathAStar(tank, destX, destY) {
         dist: 0,
         parent: null
     });
-
-
 
 
     let pfc = 0;
@@ -409,15 +417,25 @@ function getPathAStar(tank, destX, destY) {
                 if (i === 0 && j === 0) {
                     continue;
                 }
+                let isFence = false;
                 for (let k = 0; k < allFences.length; k++) {
-                    if (!allFences[k].isOverlap({x: current.x + i, y: current.y + j, width:tank.width, height:tank.height})) {
-                        neighbours.push({
-                            x: current.x + i,
-                            y: current.y + j,
-                            dist: current.dist + 1,
-                            parent: current
-                        });
+                    if (allFences[k].isOverlap({
+                        x: current.x + i,
+                        y: current.y + j,
+                        width: tank.width,
+                        height: tank.height
+                    })) {
+                        isFence = true;
+                        break;
                     }
+                }
+                if (!isFence) {
+                    neighbours.push({
+                        x: current.x + i,
+                        y: current.y + j,
+                        dist: current.dist + 1,
+                        parent: current
+                    });
                 }
             }
         }
