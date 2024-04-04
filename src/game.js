@@ -39,6 +39,7 @@ let shootInterval;
 let allHeals = [];
 let allFuels = [];
 let allOverlappables = [];
+let sounds = {};
 
 window.onload = function () {
     loadImages();
@@ -46,6 +47,14 @@ window.onload = function () {
 }
 
 function loadImages() {
+
+    //load sounds
+    sounds = {
+        'fence_bumm': new Audio('./Sounds/fence_bumm.mp3'),
+        'tank_fire': new Audio('./Sounds/tank_fire.mp3'),
+        'aiming': new Audio('./Sounds/aiming.mp3')
+    }
+
     function loadPngByName(imageName) {
         return new Promise((resolve) => {
             let img = new Image();
@@ -273,7 +282,7 @@ function botTurn() {
     setTimeout(() => {
         endRound();
         startNextRound();
-    },2000);
+    }, 2000);
 
     // let options = [];
     //
@@ -477,7 +486,9 @@ function rotationAndShootControl(e) {
             break;
         case 'Enter':
             endRound()
-            shoot(activeTank);
+            sounds['tank_fire'].play().then(() => {
+                shoot(activeTank);
+            });
             break;
     }
 
@@ -546,19 +557,41 @@ function shoot(tankParam) {
                 objectAtPoint.getDamage(tankParam.damage);
                 clearInterval(shootInterval);
                 setTimeout(() => {
+                    updateFrame();
                     startNextRound();
                 }, TIME_AFTER_COLLISION);
             }
         } else if (objectAtPoint instanceof Fence) {
             objectAtPoint.demolish(destX, destY);
             clearInterval(shootInterval);
-            clearInterval(shootInterval);
+            sounds['fence_bumm'].play();
+            drawExplosionAnimation(destX, destY, 45);
             setTimeout(() => {
-                startNextRound();
-            }, TIME_AFTER_COLLISION);
+                updateFrame();
+                setTimeout(() => {
+                    startNextRound();
+                }, 2000);
+            }, 800);
         }
 
-    }, 1);
+    }, 5);
+}
+
+function drawExplosionAnimation(x, y, size) {
+
+    let counter = 1;
+    let interval = setInterval(() => {
+        if (counter > size) {
+            clearInterval(interval);
+        }
+        ctx.beginPath();
+        ctx.arc(x, y, counter, 0, 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        ctx.closePath();
+
+        counter = counter * 1.1;
+    }, 10);
 }
 
 function drawAim(tankParam) {
