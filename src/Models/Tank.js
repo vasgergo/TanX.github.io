@@ -345,62 +345,64 @@ export class Tank {
 
     shoot(tankParam) {
         return new Promise((resolve, reject) => {
-            updateFrame();
-            console.log('shoot');
-            let distance = 0;
-            context.beginPath();
-            context.strokeStyle = 'red';
-            context.lineWidth = 1;
-            context.moveTo(this.aimParams.startX, this.aimParams.startY);
-            context.stroke();
-
-            let destX;
-            let destY;
-            let objectAtPoint;
-
-            let shootInterval = setInterval(() => {
-                distance += 1;
-
-                console.log('shoot interval');
-
-                destX = this.shootFunction(distance).x;
-                destY = this.shootFunction(distance).y;
-
-                context.lineTo(destX, destY);
+            sounds.tank_fire.play().then(() => {
+                updateFrame();
+                console.log('shoot');
+                let distance = 0;
+                context.beginPath();
+                context.strokeStyle = 'red';
+                context.lineWidth = 1;
+                context.moveTo(this.aimParams.startX, this.aimParams.startY);
                 context.stroke();
 
-                objectAtPoint = objectAt(destX, destY);
+                let destX;
+                let destY;
+                let objectAtPoint;
 
-                if (!objectAtPoint) {
-                } else if (objectAtPoint === 'wall') {
-                    clearInterval(shootInterval);
-                    setTimeout(() => {
-                        updateFrame();
-                        resolve();
-                    }, 1000);
-                } else if (objectAtPoint instanceof Tank) {
-                    if (objectAtPoint !== tankParam) {
-                        objectAtPoint.getDamage(tankParam.damage);
+                let shootInterval = setInterval(() => {
+                    distance += 1;
+
+                    console.log('shoot interval');
+
+                    destX = this.shootFunction(distance).x;
+                    destY = this.shootFunction(distance).y;
+
+                    context.lineTo(destX, destY);
+                    context.stroke();
+
+                    objectAtPoint = objectAt(destX, destY);
+
+                    if (!objectAtPoint) {
+                    } else if (objectAtPoint === 'wall') {
                         clearInterval(shootInterval);
                         setTimeout(() => {
                             updateFrame();
                             resolve();
                         }, 1000);
-                    }
-                } else if (objectAtPoint instanceof Fence) {
-                    objectAtPoint.demolish(destX, destY);
-                    clearInterval(shootInterval);
-                    sounds['fence_bumm'].play();
-                    drawExplosionAnimation(destX, destY, 45);
-                    setTimeout(() => {
-                        updateFrame();
+                    } else if (objectAtPoint instanceof Tank) {
+                        if (objectAtPoint !== tankParam) {
+                            objectAtPoint.getDamage(tankParam.damage);
+                            clearInterval(shootInterval);
+                            setTimeout(() => {
+                                updateFrame();
+                                resolve();
+                            }, 1000);
+                        }
+                    } else if (objectAtPoint instanceof Fence) {
+                        objectAtPoint.demolish(destX, destY);
+                        clearInterval(shootInterval);
+                        sounds['fence_bumm'].play();
+                        drawExplosionAnimation(destX, destY, 45);
                         setTimeout(() => {
-                            resolve();
-                        }, 2000);
-                    }, 800);
-                }
+                            updateFrame();
+                            setTimeout(() => {
+                                resolve();
+                            }, 2000);
+                        }, 800);
+                    }
 
-            }, 5);
+                }, 5);
+            });
         });
     }
 

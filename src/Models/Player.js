@@ -44,18 +44,21 @@ export class Player {
         return lose;
     }
 
+
     calculateOptions(callback) {
         setTimeout(() => {
             callback();
         }, 1000);
     };
 
+
     static timeUp() {
         Player.endRound();
         console.log('Time up');
         setTimeout(() => {
+            Player.removeControls();
             startNextRound();
-        },3000);
+        }, 5000);
 
     }
 
@@ -69,8 +72,7 @@ export class Player {
             if (this.isBot) {
                 console.log('Bot turn');
                 setTimeout(() => {
-                    timerO.stop();
-                    activeTank.isAiming = false;
+                    Player.endRound();
                     activeTank.shoot().then(() => {
                         resolve();
                     });
@@ -164,14 +166,14 @@ export class Player {
                 updateFrame();
                 break;
             case 'Enter':
-                sounds['tank_fire'].play().then(() => {
-                    Player.endRound();
-                    activeTank.shoot().then(() => {
-                        startNextRound();
-                    });
+                Player.endRound();
+                activeTank.shoot().then(() => {
+                    startNextRound();
                 });
+
                 break;
         }
+
         function callback() {
             if (timerO.getTime() > 0) {
                 activeTank.isAiming = true;
