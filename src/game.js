@@ -3,6 +3,7 @@ import {Player} from "./Models/Player.js";
 import {Fence} from "./Models/Fence.js";
 import {Heal} from "./Models/Heal.js";
 import {Fuel} from "./Models/Fuel.js";
+import {Timer} from "./Models/Timer.js";
 // import {Overlappable} from "./Services/Overlappable.js";
 // import './Menu/menu.css';
 
@@ -22,17 +23,16 @@ let bluePlayer;
 let players = [];
 
 let images = [];
-let isAimInProgress = false;
+export let isAimInProgress;
 let activePlayer;
-let activeTank;
-const ROUND_TIME = 30;
-const TIME_AFTER_COLLISION = 1000;
+export let activeTank;
+const ROUND_TIME = 10;
 console.log(GAME_MODE);
-let pressed_down_keys = {};
+export let pressed_down_keys = {};
+
+export let timerO = new Timer(ROUND_TIME);
 
 //TIMER
-let timerInterval;
-let timerSeconds;
 
 let moveAndAimInterval;
 let shootInterval;
@@ -99,9 +99,10 @@ function init() {
         });
     }
 
+    timerO.addEventListener('onChange', updateTimeDisplay);
+
     canvas = document.getElementById('myCanvas');
     context = canvas.getContext('2d');
-
 
     Heal.image = images['heal'];
     Fuel.image = images['fuel'];
@@ -116,7 +117,7 @@ function init() {
 
 
     if (GAME_MODE === 'pvc') {
-        bluePlayer.isBot = true;
+        redPlayer.isBot = true;
     }
     players.push(bluePlayer);
     players.push(redPlayer);
@@ -190,8 +191,7 @@ function startNextRound() {
     } else {
         let roundInfo = window.document.getElementById('roundInfo');
         let nextPlayerColor = window.document.getElementById('nextPlayerColor');
-        timerSeconds = ROUND_TIME;
-        window.document.getElementById('timer').innerText = timerSeconds.toFixed(1);
+        window.document.getElementById('timer').innerText = timerO.getTime();
         activePlayer = nextPlayer();
         activeTank = activePlayer.nextTank();
         console.log('->Active player is: ' + activePlayer.color + ' tank: ' + activeTank.type);
@@ -240,67 +240,26 @@ function startNextRound() {
     }
 }
 
+export function endRound() {
+    console.log('end round');
+    isAimInProgress = false;
+    clearInterval(timerInterval);
+    window.removeEventListener('keypress', rotationAndShootControl);
+}
+
 function nextRound() {
     console.log('next round');
-    timerInterval = setInterval(timer, 100);//start timer
+    timerO.start();//start updateTimeDisplay
 
     isAimInProgress = true;
     heals.push(Heal.randomHeal(allOverlappables));
     fuels.push(Fuel.randomFuel(allOverlappables));
     updateFrame()
 
-    if (activePlayer.isBot) {
-        let startTime = performance.now();
+    activePlayer.turn().then(() => {
+        startNextRound();
+    });
 
-        botTurn();
-        let endTime = performance.now();
-        let executionTime = endTime - startTime;
-
-        console.log("A kód futási ideje: " + executionTime.toFixed(0) + " milliszekundum.");
-
-    } else {
-        moveAndAimInterval = setInterval(aimAndMove, 1000 / 50);
-        window.addEventListener('keypress', rotationAndShootControl);
-    }
-
-    function aimAndMove() {
-        let isUpdated = false;
-        if (pressed_down_keys['w']) {
-            activeTank.move('up', fences, tanks, heals, fuels, canvas);
-            isUpdated = true;
-        }
-        if (pressed_down_keys['s']) {
-            activeTank.move('down', fences, tanks, heals, fuels, canvas);
-            isUpdated = true;
-        }
-        if (pressed_down_keys['a']) {
-            activeTank.move('left', fences, tanks, heals, fuels, canvas);
-            isUpdated = true;
-        }
-        if (pressed_down_keys['d']) {
-            activeTank.move('right', fences, tanks, heals, fuels, canvas);
-            isUpdated = true;
-        }
-        if (pressed_down_keys['ArrowUp']) {
-            activeTank.addToAimParams(1, 0);
-            isUpdated = true;
-        }
-        if (pressed_down_keys['ArrowDown']) {
-            activeTank.addToAimParams(-1, 0);
-            isUpdated = true;
-        }
-        if (pressed_down_keys['ArrowLeft']) {
-            activeTank.addToAimParams(0, -1);
-            isUpdated = true;
-        }
-        if (pressed_down_keys['ArrowRight']) {
-            activeTank.addToAimParams(0, 1);
-            isUpdated = true;
-        }
-        if (isUpdated) {
-            updateFrame();
-        }
-    }
 }
 
 function botTurn() {
@@ -477,17 +436,8 @@ function getPathAStar(tank, destX, destY) {
         }
         return neighbours;
     }
-
 }
 
-function endRound() {
-    isAimInProgress = false;
-    if (!activePlayer.isBot) {
-        clearInterval(moveAndAimInterval);
-        window.removeEventListener('keypress', rotationAndShootControl);
-    }
-    clearInterval(timerInterval);
-}
 
 function rotationAndShootControl(e) {
     if (e.key === '8' || e.key === '6' || e.key === '2' || e.key === '4') {
@@ -514,7 +464,9 @@ function rotationAndShootControl(e) {
         case 'Enter':
             endRound()
             sounds['tank_fire'].play().then(() => {
-                shoot(activeTank);
+                activeTank.shoot().then(() => {
+                    startNextRound();
+                });
             });
             break;
     }
@@ -528,7 +480,7 @@ function rotationAndShootControl(e) {
     }
 }
 
-function objectAt(x, y) {
+export function objectAt(x, y) {
     if (x < 0 || x > CANVAS_WIDTH || y < 0 || y > CANVAS_HEIGHT) {
         return "wall";
     }
@@ -545,66 +497,7 @@ function objectAt(x, y) {
     return undefined;
 }
 
-function shoot(tankParam) {
-    isAimInProgress = false;
-    updateFrame();
-    console.log('shoot');
-    let distance = 0;
-    context.beginPath();
-    context.strokeStyle = 'red';
-    context.lineWidth = 1;
-    context.moveTo(tankParam.aimParams.startX, tankParam.aimParams.startY);
-    context.stroke();
-
-    let destX;
-    let destY;
-    let objectAtPoint;
-
-    shootInterval = setInterval(() => {
-        distance += 1;
-
-        console.log('shoot interval');
-
-        destX = tankParam.shootFunction(distance).x;
-        destY = tankParam.shootFunction(distance).y;
-
-        context.lineTo(destX, destY);
-        context.stroke();
-
-        objectAtPoint = objectAt(destX, destY);
-
-        if (!objectAtPoint) {
-        } else if (objectAtPoint === 'wall') {
-            clearInterval(shootInterval);
-            setTimeout(() => {
-                startNextRound();
-            }, TIME_AFTER_COLLISION);
-        } else if (objectAtPoint instanceof Tank) {
-            if (objectAtPoint !== tankParam) {
-                objectAtPoint.getDamage(tankParam.damage);
-                clearInterval(shootInterval);
-                setTimeout(() => {
-                    updateFrame();
-                    startNextRound();
-                }, TIME_AFTER_COLLISION);
-            }
-        } else if (objectAtPoint instanceof Fence) {
-            objectAtPoint.demolish(destX, destY);
-            clearInterval(shootInterval);
-            sounds['fence_bumm'].play();
-            drawExplosionAnimation(destX, destY, 45);
-            setTimeout(() => {
-                updateFrame();
-                setTimeout(() => {
-                    startNextRound();
-                }, 2000);
-            }, 800);
-        }
-
-    }, 5);
-}
-
-function drawExplosionAnimation(x, y, size) {
+export function drawExplosionAnimation(x, y, size) {
 
     let counter = 1;
     let interval = setInterval(() => {
@@ -681,26 +574,15 @@ function nextPlayer() {
     }
 }
 
-function timer() {
-    if (timerSeconds <= 5) {
+function updateTimeDisplay() {
+    let timeDisplay = document.getElementById('timer');
+    let time = timerO.getTime();
+    timeDisplay.innerText = time;
+    if (time <= 5) {
         // start beep sound
-
-        window.document.getElementById('timer').style.color = 'red';
+        timeDisplay.style.color = 'red';
     } else {
-        window.document.getElementById('timer').style.color = 'black';
-    }
-    if (timerSeconds <= 0) {
-        window.document.getElementById('timer').innerText = '0.0';
-        console.log('time is up');
-        clearInterval(timerInterval);
-        endRound();
-        setTimeout(() => {
-            startNextRound();
-            endRound();
-        }, TIME_AFTER_COLLISION);
-    } else {
-        window.document.getElementById('timer').innerText = timerSeconds.toFixed(1);
-        timerSeconds -= 0.1;
+        timeDisplay.style.color = 'black';
     }
 }
 
