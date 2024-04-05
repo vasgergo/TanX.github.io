@@ -1,12 +1,22 @@
+import {
+    canvas,
+    fences,
+    heals,
+    tanks,
+    fuels,
+    context,
+    updateFrame,
+
+} from '../game.js'
+
 export class Tank {
-    constructor(x, y, team, type, direction, image, context) {
+    constructor(x, y, team, type, direction, image) {
         this.x = x;
         this.y = y;
 
         this.type = type;
         this.team = team;
         this.direction = direction;
-        this.context = context;
         this.img = image;
 
         this.width = undefined;
@@ -192,7 +202,7 @@ export class Tank {
         this.aimParams.reflection = -1 * this.aimParams.reflection;
     }
 
-    rotationAnimation(destinationAngle, updateFrame, callback) {
+    rotationAnimation(destinationAngle, callback) {
         this.angle = this.angle % 360;
 
         if (this.angle === destinationAngle) {
@@ -209,6 +219,7 @@ export class Tank {
             }
 
             updateFrame();
+
             if (this.angle === destinationAngle) {
                 console.log('clear');
                 clearInterval(interval);
@@ -218,7 +229,7 @@ export class Tank {
 
     }
 
-    move(direction, allFences, allTanks, allHeals, allFuels, canvas) {
+    move(direction) {
         let x = 0;
         let y = 0;
         if (this.fuel <= 0) {
@@ -252,42 +263,38 @@ export class Tank {
 
 
         //check if there is a heal in the way
-        for (let i = 0; i < allHeals.length; i++) {
-            if (allHeals[i].isOverlap(tankClone)) {
-                this.addHealth(allHeals[i].amount);
-
-                //remove from the array
-                allHeals.splice(i, 1);
+        for (let i = 0; i < heals.length; i++) {
+            if (heals[i].isOverlap(tankClone)) {
+                this.addHealth(heals[i].amount);
+                heals.splice(i, 1);
                 break;
             }
         }
 
         //check if there is a fuel in the way
-        for (let i = 0; i < allFuels.length; i++) {
-            if (allFuels[i].isOverlap(tankClone)) {
-                this.addFuel(allFuels[i].amount);
-
-                //remove from the array
-                allFuels.splice(i, 1);
+        for (let i = 0; i < fuels.length; i++) {
+            if (fuels[i].isOverlap(tankClone)) {
+                this.addFuel(fuels[i].amount);
+                fuels.splice(i, 1);
                 break;
             }
         }
 
         //check if there is a fence in the way
-        for (let i = 0; i < allFences.length; i++) {
-            if (allFences[i].isOverlap(tankClone)) {
+        for (let i = 0; i < fences.length; i++) {
+            if (fences[i].isOverlap(tankClone)) {
                 console.log('Fence');
                 return;
             }
         }
         //check if there is a tank in the way
-        for (let i = 0; i < allTanks.length; i++) {
+        for (let i = 0; i < tanks.length; i++) {
             //do not check with itself
-            if (allTanks[i] === this) {
+            if (tanks[i] === this) {
                 continue;
             }
-            if (allTanks[i].isOverlap(tankClone)) {
-                console.log('overlapping with: ', allTanks[i].team + ' ' + allTanks[i].type);
+            if (tanks[i].isOverlap(tankClone)) {
+                console.log('overlapping with: ', tanks[i].team + ' ' + tanks[i].type);
                 return;
             }
         }
@@ -313,19 +320,19 @@ export class Tank {
 
     draw() {
         let angle = this.angle;
-        this.context.save();
-        this.context.translate(this.x + this.img.width / 2, this.y + this.img.height / 2);
-        this.context.rotate(angle * Math.PI / 180);
+        context.save();
+        context.translate(this.x + this.img.width / 2, this.y + this.img.height / 2);
+        context.rotate(angle * Math.PI / 180);
 
-        this.context.fillStyle = 'green';
-        this.context.fillRect(-this.img.width / 2 - 5, this.img.width / 2, -5, -this.img.width * this.fuel / this.maxFuel); //y jobbra     x hatra    width jobbra   height hatra
+        context.fillStyle = 'green';
+        context.fillRect(-this.img.width / 2 - 5, this.img.width / 2, -5, -this.img.width * this.fuel / this.maxFuel); //y jobbra     x hatra    width jobbra   height hatra
 
-        this.context.fillStyle = 'red';
+        context.fillStyle = 'red';
 
-        this.context.drawImage(this.img, -this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
+        context.drawImage(this.img, -this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
 
-        this.context.fillRect(this.img.width / 2 + 5, this.img.width / 2, 5, -this.img.width * this.health / this.maxHealth); //y jobbra     x hatra    width jobbra   height hatra
+        context.fillRect(this.img.width / 2 + 5, this.img.width / 2, 5, -this.img.width * this.health / this.maxHealth); //y jobbra     x hatra    width jobbra   height hatra
 
-        this.context.restore();
+        context.restore();
     }
 }

@@ -1,5 +1,5 @@
 export class Player {
-    constructor(color, isBot = false) {
+    constructor(color,  isBot = false) {
         this.color = color;
         this.isBot = isBot;
         this.tanks = [];
@@ -15,7 +15,7 @@ export class Player {
         if (this.tankIndex >= this.tanks.length) {
             this.tankIndex = 0;
         }
-        while(this.tanks[this.tankIndex].isCrashed){
+        while (this.tanks[this.tankIndex].isCrashed) {
             this.tankIndex++;
             if (this.tankIndex >= this.tanks.length) {
                 this.tankIndex = 0;
@@ -24,10 +24,10 @@ export class Player {
         return this.tanks[this.tankIndex];
     }
 
-    isLose(){
+    isLose() {
         let lose = true;
-        for(let i = 0; i < this.tanks.length; i++){
-            if(!this.tanks[i].isCrashed){
+        for (let i = 0; i < this.tanks.length; i++) {
+            if (!this.tanks[i].isCrashed) {
                 lose = false;
                 break;
             }
@@ -35,10 +35,10 @@ export class Player {
         return lose;
     }
 
-    calculateOptions(callback){
+    calculateOptions(callback) {
         setTimeout(() => {
             callback();
-        },5000);
+        }, 5000);
     };
 
 }

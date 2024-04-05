@@ -12,18 +12,19 @@ let CANVAS_WIDTH = document.getElementById('myCanvas').width;
 let CANVAS_HEIGHT = document.getElementById('myCanvas').height;
 const ORIGINAL_WINDOW_WIDTH = 1536;
 const ORIGINAL_WINDOW_HEIGHT = 703;
-const GAME_MODE = window.sessionStorage.getItem("playerMode")
-let ctx;
-let canvas;
+const GAME_MODE = window.sessionStorage.getItem("playerMode");
+
+export let context;
+export let canvas;
+
 let redPlayer;
 let bluePlayer;
 let players = [];
+
 let images = [];
 let isAimInProgress = false;
-let allTanks = [];
 let activePlayer;
 let activeTank;
-let allFences = [];
 const ROUND_TIME = 30;
 const TIME_AFTER_COLLISION = 1000;
 console.log(GAME_MODE);
@@ -36,10 +37,15 @@ let timerSeconds;
 let moveAndAimInterval;
 let shootInterval;
 
-let allHeals = [];
-let allFuels = [];
+export let heals = [];
+export let fuels = [];
+export let fences = [];
+export let tanks = [];
+
+export let sounds = {};
+
+
 let allOverlappables = [];
-let sounds = {};
 
 window.onload = function () {
     loadImages();
@@ -94,15 +100,15 @@ function init() {
     }
 
     canvas = document.getElementById('myCanvas');
-    ctx = canvas.getContext('2d');
+    context = canvas.getContext('2d');
 
 
     Heal.image = images['heal'];
     Fuel.image = images['fuel'];
     Fence.image = images['fence'];
 
-    Heal.ctx = ctx;
-    Fuel.ctx = ctx;
+    Heal.ctx = context;
+    Fuel.ctx = context;
 
     //create players
     redPlayer = new Player('red');
@@ -114,50 +120,50 @@ function init() {
     }
     players.push(bluePlayer);
     players.push(redPlayer);
-    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], ctx));
-    bluePlayer.addTank(new Tank(110, 300, 'blue', 'medium', 'right', images['blue_medium'], ctx));
-    bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], ctx));
-    redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], ctx));
-    redPlayer.addTank(new Tank(890, 310, 'red', 'medium', 'left', images['red_medium'], ctx));
-    redPlayer.addTank(new Tank(950, 430, 'red', 'heavy', 'left', images['red_heavy'], ctx));
+    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], context));
+    bluePlayer.addTank(new Tank(110, 300, 'blue', 'medium', 'right', images['blue_medium'], context));
+    bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], context));
+    redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], context));
+    redPlayer.addTank(new Tank(890, 310, 'red', 'medium', 'left', images['red_medium'], context));
+    redPlayer.addTank(new Tank(950, 430, 'red', 'heavy', 'left', images['red_heavy'], context));
 
     players.forEach((player) => {
         player.tanks.forEach((tank) => {
-            allTanks.push(tank);
+            tanks.push(tank);
         });
     });
 
     let randomInit = false;
 
-    allOverlappables.push(allFences, allHeals, allFuels, allTanks);
+    allOverlappables.push(fences, heals, fuels, tanks);
 
     //----------PREDEFINED INITIALIZATION----------------
 
     if (!randomInit) {
 
-        allFences.push(new Fence(350, 100, 'normal_y', 10));
-        allFences.push(new Fence(350, 400, 'normal_y', 10));
-        allFences.push(new Fence(700, 100, 'normal_y', 10));
-        allFences.push(new Fence(700, 400, 'normal_y', 10));
-        allFences.push(new Fence(480, 250, 'tank_trap', 10));
+        fences.push(new Fence(350, 100, 'normal_y', 10));
+        fences.push(new Fence(350, 400, 'normal_y', 10));
+        fences.push(new Fence(700, 100, 'normal_y', 10));
+        fences.push(new Fence(700, 400, 'normal_y', 10));
+        fences.push(new Fence(480, 250, 'tank_trap', 10));
 
-        allHeals.push(new Heal(180, 150));
-        allHeals.push(new Heal(500, 450));
-        allHeals.push(new Heal(900, 45));
+        heals.push(new Heal(180, 150));
+        heals.push(new Heal(500, 450));
+        heals.push(new Heal(900, 45));
 
-        allFuels.push(new Fuel(700, 270));
-        allFuels.push(new Fuel(500, 150));
+        fuels.push(new Fuel(700, 270));
+        fuels.push(new Fuel(500, 150));
 
         console.log(allOverlappables);
     }
     //-----------RANDOM INITIALIZATION----------------
 
     if (randomInit) {
-        allOverlappables.push(allTanks);
-        allFences = Fence.randomWalls(images['fence'], allOverlappables);
-        allOverlappables.push(allFences);
-        allHeals.push(Heal.randomHeal(allOverlappables));
-        allFuels.push(Fuel.randomFuel(allOverlappables));
+        allOverlappables.push(tanks);
+        fences = Fence.randomWalls(images['fence'], allOverlappables);
+        allOverlappables.push(fences);
+        heals.push(Heal.randomHeal(allOverlappables));
+        fuels.push(Fuel.randomFuel(allOverlappables));
     }
 
     //it's needed to start with blue player
@@ -239,8 +245,8 @@ function nextRound() {
     timerInterval = setInterval(timer, 100);//start timer
 
     isAimInProgress = true;
-    allHeals.push(Heal.randomHeal(allOverlappables));
-    allFuels.push(Fuel.randomFuel(allOverlappables));
+    heals.push(Heal.randomHeal(allOverlappables));
+    fuels.push(Fuel.randomFuel(allOverlappables));
     updateFrame()
 
     if (activePlayer.isBot) {
@@ -260,19 +266,19 @@ function nextRound() {
     function aimAndMove() {
         let isUpdated = false;
         if (pressed_down_keys['w']) {
-            activeTank.move('up', allFences, allTanks, allHeals, allFuels, canvas);
+            activeTank.move('up', fences, tanks, heals, fuels, canvas);
             isUpdated = true;
         }
         if (pressed_down_keys['s']) {
-            activeTank.move('down', allFences, allTanks, allHeals, allFuels, canvas);
+            activeTank.move('down', fences, tanks, heals, fuels, canvas);
             isUpdated = true;
         }
         if (pressed_down_keys['a']) {
-            activeTank.move('left', allFences, allTanks, allHeals, allFuels, canvas);
+            activeTank.move('left', fences, tanks, heals, fuels, canvas);
             isUpdated = true;
         }
         if (pressed_down_keys['d']) {
-            activeTank.move('right', allFences, allTanks, allHeals, allFuels, canvas);
+            activeTank.move('right', fences, tanks, heals, fuels, canvas);
             isUpdated = true;
         }
         if (pressed_down_keys['ArrowUp']) {
@@ -371,10 +377,10 @@ function getPathAStar(tank, destX, destY) {
     let pfc = 0;
     openList.pullFirst = function () {
         pfc++;
-        ctx.beginPath();
-        ctx.strokeStyle = 'red';
-        ctx.fillRect(this[0].x, this[0].y, 1, 1);
-        ctx.stroke();
+        context.beginPath();
+        context.strokeStyle = 'red';
+        context.fillRect(this[0].x, this[0].y, 1, 1);
+        context.stroke();
 
         this.sort((a, b) => {
             return a.dist + getHeuristic(a) - b.dist - getHeuristic(b);
@@ -387,12 +393,12 @@ function getPathAStar(tank, destX, destY) {
         current = openList.pullFirst();
         if (current.x === destX && current.y === destY) {
             console.log("pfv: ", pfc);
-            ctx.beginPath();
-            ctx.strokeStyle = 'green';
-            ctx.lineWidth = 1;
-            ctx.moveTo(current.x, current.y);
-            ctx.lineTo(current.x + 1, current.y + 1);
-            ctx.stroke();
+            context.beginPath();
+            context.strokeStyle = 'green';
+            context.lineWidth = 1;
+            context.moveTo(current.x, current.y);
+            context.lineTo(current.x + 1, current.y + 1);
+            context.stroke();
             return linkedListToArray(current);
         }
         closedList.push(current);
@@ -448,8 +454,8 @@ function getPathAStar(tank, destX, destY) {
                     continue;
                 }
                 let isFence = false;
-                for (let k = 0; k < allFences.length; k++) {
-                    if (allFences[k].isOverlap({
+                for (let k = 0; k < fences.length; k++) {
+                    if (fences[k].isOverlap({
                         x: current.x + i,
                         y: current.y + j,
                         width: tank.width,
@@ -490,16 +496,16 @@ function rotationAndShootControl(e) {
     }
     switch (e.key) {
         case '8':
-            activeTank.rotationAnimation(0, updateFrame, callback);
+            activeTank.rotationAnimation(0, callback);
             break;
         case '6':
-            activeTank.rotationAnimation(90, updateFrame, callback);
+            activeTank.rotationAnimation(90, callback);
             break;
         case '2':
-            activeTank.rotationAnimation(180, updateFrame, callback);
+            activeTank.rotationAnimation(180, callback);
             break;
         case '4':
-            activeTank.rotationAnimation(270, updateFrame, callback);
+            activeTank.rotationAnimation(270, callback);
             break;
         case"5":
             activeTank.changeReflection();
@@ -526,14 +532,14 @@ function objectAt(x, y) {
     if (x < 0 || x > CANVAS_WIDTH || y < 0 || y > CANVAS_HEIGHT) {
         return "wall";
     }
-    for (let i = 0; i < allFences.length; i++) {
-        if (allFences[i].isCollide(x, y)) {
-            return allFences[i];
+    for (let i = 0; i < fences.length; i++) {
+        if (fences[i].isCollide(x, y)) {
+            return fences[i];
         }
     }
-    for (let i = 0; i < allTanks.length; i++) {
-        if (allTanks[i].x < x && allTanks[i].x + allTanks[i].img.width > x && allTanks[i].y < y && allTanks[i].y + allTanks[i].img.height > y) {
-            return allTanks[i];
+    for (let i = 0; i < tanks.length; i++) {
+        if (tanks[i].x < x && tanks[i].x + tanks[i].img.width > x && tanks[i].y < y && tanks[i].y + tanks[i].img.height > y) {
+            return tanks[i];
         }
     }
     return undefined;
@@ -544,11 +550,11 @@ function shoot(tankParam) {
     updateFrame();
     console.log('shoot');
     let distance = 0;
-    ctx.beginPath();
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 1;
-    ctx.moveTo(tankParam.aimParams.startX, tankParam.aimParams.startY);
-    ctx.stroke();
+    context.beginPath();
+    context.strokeStyle = 'red';
+    context.lineWidth = 1;
+    context.moveTo(tankParam.aimParams.startX, tankParam.aimParams.startY);
+    context.stroke();
 
     let destX;
     let destY;
@@ -562,8 +568,8 @@ function shoot(tankParam) {
         destX = tankParam.shootFunction(distance).x;
         destY = tankParam.shootFunction(distance).y;
 
-        ctx.lineTo(destX, destY);
-        ctx.stroke();
+        context.lineTo(destX, destY);
+        context.stroke();
 
         objectAtPoint = objectAt(destX, destY);
 
@@ -605,11 +611,11 @@ function drawExplosionAnimation(x, y, size) {
         if (counter > size) {
             clearInterval(interval);
         }
-        ctx.beginPath();
-        ctx.arc(x, y, counter, 0, 2 * Math.PI);
-        ctx.fillStyle = 'red';
-        ctx.fill();
-        ctx.closePath();
+        context.beginPath();
+        context.arc(x, y, counter, 0, 2 * Math.PI);
+        context.fillStyle = 'red';
+        context.fill();
+        context.closePath();
 
         counter = counter * 1.1;
     }, 10);
@@ -617,10 +623,10 @@ function drawExplosionAnimation(x, y, size) {
 
 function drawAim(tankParam) {
     tankParam.updateAimParams();
-    ctx.beginPath();
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 1;
-    ctx.moveTo(tankParam.aimParams.startX, tankParam.aimParams.startY);
+    context.beginPath();
+    context.strokeStyle = 'red';
+    context.lineWidth = 1;
+    context.moveTo(tankParam.aimParams.startX, tankParam.aimParams.startY);
     let prevX = tankParam.aimParams.startX;
     let prevY = tankParam.aimParams.startY;
     let destX;
@@ -634,33 +640,33 @@ function drawAim(tankParam) {
         allDistance += Math.sqrt(Math.pow(destX - prevX, 2) + Math.pow(destY - prevY, 2));
         prevX = destX;
         prevY = destY;
-        ctx.lineTo(destX, destY);
+        context.lineTo(destX, destY);
     }
-    ctx.stroke();
-    ctx.closePath();
+    context.stroke();
+    context.closePath();
 }
 
-function updateFrame() {
+export function updateFrame() {
     console.log('update frame');
-    ctx.drawImage(images['desert'], 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    context.drawImage(images['desert'], 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     if (isAimInProgress) {
         drawAim(activeTank);
     }
 
-    allFuels.forEach((fuel) => {
+    fuels.forEach((fuel) => {
         fuel.draw();
     });
 
-    allHeals.forEach((heal) => {
+    heals.forEach((heal) => {
         heal.draw();
     });
 
-    allFences.forEach((fence) => {
-        fence.draw(ctx);
+    fences.forEach((fence) => {
+        fence.draw(context);
     });
 
-    allTanks.forEach((tank) => {
+    tanks.forEach((tank) => {
         tank.draw();
     });
 
@@ -700,15 +706,15 @@ function timer() {
 
 function updateInfoPanelTankColor() {
     let color;
-    for (let i = 0; i < allTanks.length; i++) {
-        if (allTanks[i] === activeTank) {
+    for (let i = 0; i < tanks.length; i++) {
+        if (tanks[i] === activeTank) {
             color = 'green';
-        } else if (allTanks[i].isCrashed) {
+        } else if (tanks[i].isCrashed) {
             color = 'red';
         } else {
             color = 'white';
         }
-        document.getElementById(allTanks[i].team + '_' + allTanks[i].type).style.backgroundColor = color;
+        document.getElementById(tanks[i].team + '_' + tanks[i].type).style.backgroundColor = color;
     }
 }
 
@@ -725,13 +731,13 @@ function menuClose() {
 function updateInfoPanels() {
     let actualTankColor;
     let actualTankType;
-    for (let i = 0; i < allTanks.length; i++) {
-        actualTankColor = allTanks[i].team;
-        actualTankType = allTanks[i].type;
-        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'health').innerText = allTanks[i].health;
-        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'fuel').innerText = allTanks[i].fuel.toFixed(1);
-        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'consumption').innerText = allTanks[i].consumption;
-        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'damage').innerText = allTanks[i].damage;
+    for (let i = 0; i < tanks.length; i++) {
+        actualTankColor = tanks[i].team;
+        actualTankType = tanks[i].type;
+        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'health').innerText = tanks[i].health;
+        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'fuel').innerText = tanks[i].fuel.toFixed(1);
+        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'consumption').innerText = tanks[i].consumption;
+        document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'damage').innerText = tanks[i].damage;
 
     }
 }
