@@ -25,7 +25,7 @@ let players = [];
 let images = [];
 let activePlayer;
 export let activeTank;
-const ROUND_TIME = 10;
+const ROUND_TIME = 30;
 console.log(GAME_MODE);
 export let pressed_down_keys = {};
 

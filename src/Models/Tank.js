@@ -143,6 +143,7 @@ export class Tank {
             this.aimParams.p1 += p1;
             this.aimParams.p2 += p2;
         }
+        updateFrame();
     }
 
     setAimParams(p1, p2) {
@@ -309,6 +310,7 @@ export class Tank {
         this.x += x;
         this.y += y;
         this.fuel -= this.consumption / 100;
+        updateFrame();
     }
 
     getDamage(damage) {
@@ -343,7 +345,7 @@ export class Tank {
     }
 
 
-    shoot(tankParam) {
+    shoot() {
         return new Promise((resolve, reject) => {
             sounds.tank_fire.play().then(() => {
                 updateFrame();
@@ -380,8 +382,8 @@ export class Tank {
                             resolve();
                         }, 1000);
                     } else if (objectAtPoint instanceof Tank) {
-                        if (objectAtPoint !== tankParam) {
-                            objectAtPoint.getDamage(tankParam.damage);
+                        if (objectAtPoint !== this) {
+                            objectAtPoint.getDamage(this.damage);
                             clearInterval(shootInterval);
                             setTimeout(() => {
                                 updateFrame();

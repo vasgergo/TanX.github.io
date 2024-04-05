@@ -48,7 +48,7 @@ export class Player {
     calculateOptions(callback) {
         setTimeout(() => {
             callback();
-        }, 1000);
+        }, 3000);
     };
 
 
@@ -71,12 +71,20 @@ export class Player {
 
             if (this.isBot) {
                 console.log('Bot turn');
+                let counter = 0;
+                let interval = setInterval(() => {
+                    if (counter > 200) {
+                        clearInterval(interval);
+                    }
+                    activeTank.move('down');
+                    counter++;
+                }, 1000 / 50);
                 setTimeout(() => {
                     Player.endRound();
                     activeTank.shoot().then(() => {
                         resolve();
                     });
-                }, 3000);
+                }, 5000);
             } else {
                 console.log('Player turn');
                 Player.addControls();
@@ -105,41 +113,29 @@ export class Player {
     }
 
     static aimAndMoveControl() {
-        let isUpdated = false;
         if (pressed_down_keys['w']) {
             activeTank.move('up');
-            isUpdated = true;
         }
         if (pressed_down_keys['s']) {
             activeTank.move('down');
-            isUpdated = true;
         }
         if (pressed_down_keys['a']) {
             activeTank.move('left');
-            isUpdated = true;
         }
         if (pressed_down_keys['d']) {
             activeTank.move('right');
-            isUpdated = true;
         }
         if (pressed_down_keys['ArrowUp']) {
             activeTank.addToAimParams(1, 0);
-            isUpdated = true;
         }
         if (pressed_down_keys['ArrowDown']) {
             activeTank.addToAimParams(-1, 0);
-            isUpdated = true;
         }
         if (pressed_down_keys['ArrowLeft']) {
             activeTank.addToAimParams(0, -1);
-            isUpdated = true;
         }
         if (pressed_down_keys['ArrowRight']) {
             activeTank.addToAimParams(0, 1);
-            isUpdated = true;
-        }
-        if (isUpdated) {
-            updateFrame();
         }
     }
 
