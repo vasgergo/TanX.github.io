@@ -5,7 +5,6 @@ import {
     tanks,
     fuels,
     context,
-    isAimInProgress,
     sounds,
     drawExplosionAnimation,
     objectAt,
@@ -23,6 +22,8 @@ export class Tank {
         this.team = team;
         this.direction = direction;
         this.img = image;
+
+        this.isAiming = false;
 
         this.width = undefined;
         this.height = undefined;
@@ -374,6 +375,7 @@ export class Tank {
                 } else if (objectAtPoint === 'wall') {
                     clearInterval(shootInterval);
                     setTimeout(() => {
+                        updateFrame();
                         resolve();
                     }, 1000);
                 } else if (objectAtPoint instanceof Tank) {

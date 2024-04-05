@@ -1,13 +1,15 @@
 import {
     canvas,
-    endRound,
     fences,
     fuels,
     heals,
     tanks,
     updateFrame,
+    startNextRound,
     pressed_down_keys,
     activeTank,
+    sounds,
+    timerO,
 } from "../game.js";
 
 export class Player {
@@ -55,38 +57,60 @@ export class Player {
 
     turn() {
         return new Promise((resolve, reject) => {
+            timerO.addEventListener('OnTimeUp', () => {
+                timerO.removeEventListener('OnTimeUp', () => {
+                });
+                console.log('Time is up');
+                if (!this.isBot) {
+                    this.removeControls();
+                }
+                activeTank.isAiming = false;
+                updateFrame();
+                resolve();
+            })
+            activeTank.isAiming = true;
+            updateFrame();
             if (this.isBot) {
                 console.log('Bot turn');
                 setTimeout(() => {
                     console.log('Bot turn end');
-                    endRound();
                     resolve();
                 }, 3000);
             } else {
                 console.log('Player turn');
-
-                let moveAndAimInterval = setInterval(this.aimAndMove, 1000 / 50);
-                // window.addEventListener('keypress', rotationAndShootControl);
+                Player.addControls();
             }
         });
     }
 
-    aimAndMove() {
+    static moveAndAimInterval;
+
+    static addControls() {
+        Player.moveAndAimInterval = setInterval(Player.aimAndMoveControl, 1000 / 50);
+        window.addEventListener('keypress', Player.rotationAndShootControl);
+    }
+
+    static removeControls() {
+        clearInterval(Player.moveAndAimInterval);
+        window.removeEventListener('keypress', Player.rotationAndShootControl);
+    }
+
+    static aimAndMoveControl() {
         let isUpdated = false;
         if (pressed_down_keys['w']) {
-            activeTank.move('up', fences, tanks, heals, fuels, canvas);
+            activeTank.move('up');
             isUpdated = true;
         }
         if (pressed_down_keys['s']) {
-            activeTank.move('down', fences, tanks, heals, fuels, canvas);
+            activeTank.move('down');
             isUpdated = true;
         }
         if (pressed_down_keys['a']) {
-            activeTank.move('left', fences, tanks, heals, fuels, canvas);
+            activeTank.move('left');
             isUpdated = true;
         }
         if (pressed_down_keys['d']) {
-            activeTank.move('right', fences, tanks, heals, fuels, canvas);
+            activeTank.move('right');
             isUpdated = true;
         }
         if (pressed_down_keys['ArrowUp']) {
@@ -107,6 +131,49 @@ export class Player {
         }
         if (isUpdated) {
             updateFrame();
+        }
+    }
+
+    static rotationAndShootControl(e) {
+        if (e.key === '8' || e.key === '6' || e.key === '2' || e.key === '4') {
+            activeTank.isAiming = false;
+            Player.removeControls();
+        }
+        switch (e.key) {
+            case '8':
+                activeTank.rotationAnimation(0, callback);
+                break;
+            case '6':
+                activeTank.rotationAnimation(90, callback);
+                break;
+            case '2':
+                activeTank.rotationAnimation(180, callback);
+                break;
+            case '4':
+                activeTank.rotationAnimation(270, callback);
+                break;
+            case"5":
+                activeTank.changeReflection();
+                updateFrame();
+                break;
+            case 'Enter':
+                sounds['tank_fire'].play().then(() => {
+                    timerO.stop();
+                    activeTank.isAiming = false;
+                    Player.removeControls();
+                    activeTank.shoot().then(() => {
+                        startNextRound();
+                    });
+                });
+                break;
+        }
+
+        function callback() {
+            if (timerO.getTime() > 0) {
+                activeTank.isAiming = true;
+                updateFrame();
+                Player.addControls();
+            }
         }
     }
 

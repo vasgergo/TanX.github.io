@@ -23,7 +23,6 @@ let bluePlayer;
 let players = [];
 
 let images = [];
-export let isAimInProgress;
 let activePlayer;
 export let activeTank;
 const ROUND_TIME = 10;
@@ -184,11 +183,12 @@ function startGame() {
     startNextRound();
 }
 
-function startNextRound() {
+export function startNextRound() {
     if (redPlayer.isLose() || bluePlayer.isLose()) {
         console.log('game over');
         window.location.href = 'index.html';
     } else {
+        timerO.reset();
         let roundInfo = window.document.getElementById('roundInfo');
         let nextPlayerColor = window.document.getElementById('nextPlayerColor');
         window.document.getElementById('timer').innerText = timerO.getTime();
@@ -240,18 +240,10 @@ function startNextRound() {
     }
 }
 
-export function endRound() {
-    console.log('end round');
-    isAimInProgress = false;
-    clearInterval(timerInterval);
-    window.removeEventListener('keypress', rotationAndShootControl);
-}
-
 function nextRound() {
     console.log('next round');
-    timerO.start();//start updateTimeDisplay
+    timerO.start();
 
-    isAimInProgress = true;
     heals.push(Heal.randomHeal(allOverlappables));
     fuels.push(Fuel.randomFuel(allOverlappables));
     updateFrame()
@@ -262,60 +254,6 @@ function nextRound() {
 
 }
 
-function botTurn() {
-
-    console.log('bot turns');
-    setTimeout(() => {
-        endRound();
-        startNextRound();
-    }, 2000);
-
-    // let options = [];
-    //
-    // options.push(
-    //     {
-    //         path: getPathAStar(activeTank, 200, 170),
-    //         aimParams: {p1: 20, p2: 20, reflection: false},
-    //         score: 0
-    //     }
-    // );
-    //
-    // playOption(options[0]);
-    //
-    // function playOption(option) {
-    //
-    // }
-
-    // let path = getPathAStar(activeTank, 500, 170);
-    //
-    // console.log(path);
-    //
-    // for (let i = 0; i < path.length; i++) {
-    //     ctx.beginPath();
-    //     ctx.strokeStyle = 'blue';
-    //     ctx.lineWidth = 1;
-    //     ctx.moveTo(path[i].x, path[i].y);
-    //     ctx.lineTo(path[i].x + 1, path[i].y + 1);
-    //     ctx.stroke();
-    // }
-
-
-    function getShootOptions() {
-        let p1Arr = [];
-        let p2Arr = [];
-        for (let i = Tank.paramInterval.p1.min; i <= Tank.paramInterval.p1.max; i++) {
-            for (let j = Tank.paramInterval.p2.min; j <= Tank.paramInterval.p2.max; j++) {
-                let shootRes = shootResult();
-                activeTank.setAimParams(i, j);
-                if (shootRes instanceof Tank && shootRes.team !== activeTank.team) {
-                    p1Arr.push(i);
-                    p2Arr.push(j);
-                }
-            }
-        }
-        return {p1: p1Arr, p2: p2Arr, number: p1Arr.length};
-    }
-}
 
 function getPathAStar(tank, destX, destY) {
     console.log('getPathAStar');
@@ -438,48 +376,6 @@ function getPathAStar(tank, destX, destY) {
     }
 }
 
-
-function rotationAndShootControl(e) {
-    if (e.key === '8' || e.key === '6' || e.key === '2' || e.key === '4') {
-        isAimInProgress = false;
-        window.removeEventListener('keypress', rotationAndShootControl);
-    }
-    switch (e.key) {
-        case '8':
-            activeTank.rotationAnimation(0, callback);
-            break;
-        case '6':
-            activeTank.rotationAnimation(90, callback);
-            break;
-        case '2':
-            activeTank.rotationAnimation(180, callback);
-            break;
-        case '4':
-            activeTank.rotationAnimation(270, callback);
-            break;
-        case"5":
-            activeTank.changeReflection();
-            updateFrame();
-            break;
-        case 'Enter':
-            endRound()
-            sounds['tank_fire'].play().then(() => {
-                activeTank.shoot().then(() => {
-                    startNextRound();
-                });
-            });
-            break;
-    }
-
-    function callback() {
-        if (timerSeconds !== ROUND_TIME) {
-            isAimInProgress = true;
-            updateFrame();
-            window.addEventListener('keypress', rotationAndShootControl);
-        }
-    }
-}
-
 export function objectAt(x, y) {
     if (x < 0 || x > CANVAS_WIDTH || y < 0 || y > CANVAS_HEIGHT) {
         return "wall";
@@ -543,7 +439,7 @@ export function updateFrame() {
     console.log('update frame');
     context.drawImage(images['desert'], 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    if (isAimInProgress) {
+    if (activeTank && activeTank.isAiming) {
         drawAim(activeTank);
     }
 
@@ -620,7 +516,6 @@ function updateInfoPanels() {
         document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'fuel').innerText = tanks[i].fuel.toFixed(1);
         document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'consumption').innerText = tanks[i].consumption;
         document.getElementById(actualTankColor + '_' + actualTankType + '_' + 'damage').innerText = tanks[i].damage;
-
     }
 }
 

@@ -12,6 +12,15 @@ export class Timer extends EventTarget {
         }, 100);
     }
 
+    stop() {
+        clearInterval(this.interval);
+    }
+
+    reset() {
+        this.time = this.roundTime;
+        this.emitChangeTimeEvent();
+    }
+
     getTime() {
         return this.time.toFixed(1);
     }
@@ -25,12 +34,9 @@ export class Timer extends EventTarget {
         }
     }
 
-    stop() {
-        clearInterval(this.interval);
-    }
 
     emitChangeTimeEvent() {
-        let event = new CustomEvent('onChange', {asd:"asd"});
+        let event = new CustomEvent('onChange');
         this.dispatchEvent(event);
     }
 
