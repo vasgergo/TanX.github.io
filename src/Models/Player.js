@@ -1,9 +1,4 @@
 import {
-    canvas,
-    fences,
-    fuels,
-    heals,
-    tanks,
     updateFrame,
     startNextRound,
     pressed_down_keys,
@@ -55,32 +50,44 @@ export class Player {
         }, 1000);
     };
 
+    static timeUp() {
+        Player.endRound();
+        console.log('Time up');
+        setTimeout(() => {
+            startNextRound();
+        },3000);
+
+    }
+
     turn() {
         return new Promise((resolve, reject) => {
-            timerO.addEventListener('OnTimeUp', () => {
-                timerO.removeEventListener('OnTimeUp', () => {
-                });
-                console.log('Time is up');
-                if (!this.isBot) {
-                    this.removeControls();
-                }
-                activeTank.isAiming = false;
-                updateFrame();
-                resolve();
-            })
             activeTank.isAiming = true;
             updateFrame();
+
+            timerO.addEventListener('OnTimeUp', Player.timeUp);
+
             if (this.isBot) {
                 console.log('Bot turn');
                 setTimeout(() => {
-                    console.log('Bot turn end');
-                    resolve();
+                    timerO.stop();
+                    activeTank.isAiming = false;
+                    activeTank.shoot().then(() => {
+                        resolve();
+                    });
                 }, 3000);
             } else {
                 console.log('Player turn');
                 Player.addControls();
             }
         });
+    }
+
+    static endRound() {
+        timerO.stop();
+        timerO.removeEventListener('OnTimeUp', Player.timeUp);
+        activeTank.isAiming = false;
+        updateFrame();
+        Player.removeControls();
     }
 
     static moveAndAimInterval;
@@ -158,16 +165,13 @@ export class Player {
                 break;
             case 'Enter':
                 sounds['tank_fire'].play().then(() => {
-                    timerO.stop();
-                    activeTank.isAiming = false;
-                    Player.removeControls();
+                    Player.endRound();
                     activeTank.shoot().then(() => {
                         startNextRound();
                     });
                 });
                 break;
         }
-
         function callback() {
             if (timerO.getTime() > 0) {
                 activeTank.isAiming = true;

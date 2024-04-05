@@ -34,7 +34,6 @@ export class Timer extends EventTarget {
         }
     }
 
-
     emitChangeTimeEvent() {
         let event = new CustomEvent('onChange');
         this.dispatchEvent(event);
