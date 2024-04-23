@@ -1,17 +1,13 @@
 import {Random} from "../Services/Random.js";
 import {Overlappable} from "../Services/Overlappable.js";
+import {Rectagle} from "./Rectagle.js";
 
-export class Heal {
+export class Heal extends Rectagle{
     static image;
     static ctx;
 
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
-
-
-        this.width = 30;
-        this.height = 30;
+        super(x, y, 30, 30);
         this.amount = 20;
     }
 

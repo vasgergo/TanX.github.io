@@ -12,11 +12,11 @@ import {
 
 } from '../game.js';
 import {Fence} from "./Fence.js";
+import {Rectagle} from "./Rectagle.js";
 
-export class Tank {
+export class Tank extends Rectagle {
     constructor(x, y, team, type, direction, image) {
-        this.x = x;
-        this.y = y;
+        super(x, y, null, null);
 
         this.type = type;
         this.team = team;
@@ -25,8 +25,6 @@ export class Tank {
 
         this.isAiming = false;
 
-        this.width = undefined;
-        this.height = undefined;
         this.health = undefined;
         this.fuel = undefined;
         this.consumption = undefined;
@@ -40,8 +38,8 @@ export class Tank {
                 this.height = 30;
                 this.maxHealth = 100;
                 this.health = 100;
-                this.maxFuel = 100;
-                this.fuel = 100;
+                this.maxFuel = 1000;
+                this.fuel = 1000;
                 this.consumption = 20;
                 this.damage = 10;
                 this.speed = 1;
@@ -145,6 +143,7 @@ export class Tank {
         }
         updateFrame();
     }
+
 
     setAimParams(p1, p2) {
         if (p1 < Tank.paramInterval.p1.min || p1 > Tank.paramInterval.p1.max || p2 < Tank.paramInterval.p2.min || p2 > Tank.paramInterval.p2.max) {
@@ -344,6 +343,15 @@ export class Tank {
         context.restore();
     }
 
+    getNeighbours() {
+        return {
+            up: {x: this.getCenter().x, y: this.getCenter().y - 1},
+            right: {x: this.getCenter().x + 1, y: this.getCenter().y},
+            down: {x: this.getCenter().x, y: this.getCenter().y + 1},
+            left: {x: this.getCenter().x - 1, y: this.getCenter().y},
+        };
+
+    }
 
     shoot() {
         return new Promise((resolve, reject) => {

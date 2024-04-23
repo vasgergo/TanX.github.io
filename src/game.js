@@ -116,12 +116,13 @@ function init() {
 
 
     if (GAME_MODE === 'pvc') {
+        bluePlayer.isBot = true;
         redPlayer.isBot = true;
     }
     players.push(bluePlayer);
     players.push(redPlayer);
     bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], context));
-    bluePlayer.addTank(new Tank(110, 300, 'blue', 'medium', 'right', images['blue_medium'], context));
+    bluePlayer.addTank(new Tank(100, 300, 'blue', 'medium', 'right', images['blue_medium'], context));
     bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], context));
     redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], context));
     redPlayer.addTank(new Tank(890, 310, 'red', 'medium', 'left', images['red_medium'], context));
@@ -133,7 +134,7 @@ function init() {
         });
     });
 
-    let randomInit = false;
+    let randomInit = true;
 
     allOverlappables.push(fences, heals, fuels, tanks);
 
@@ -147,9 +148,12 @@ function init() {
         fences.push(new Fence(700, 400, 'normal_y', 10));
         fences.push(new Fence(480, 250, 'tank_trap', 10));
 
-        heals.push(new Heal(180, 150));
+        heals.push(new Heal(300, 300));
+        heals.push(new Heal(800, 300));
         heals.push(new Heal(500, 450));
         heals.push(new Heal(900, 45));
+        // heals.push(new Heal(500, 450));
+        // heals.push(new Heal(900, 45));
 
         fuels.push(new Fuel(700, 270));
         fuels.push(new Fuel(500, 150));
@@ -159,11 +163,13 @@ function init() {
     //-----------RANDOM INITIALIZATION----------------
 
     if (randomInit) {
-        allOverlappables.push(tanks);
-        fences = Fence.randomWalls(images['fence'], allOverlappables);
-        allOverlappables.push(fences);
-        heals.push(Heal.randomHeal(allOverlappables));
-        fuels.push(Fuel.randomFuel(allOverlappables));
+        // allOverlappables.push(tanks);
+        // fences = Fence.randomWalls(images['fence'], allOverlappables);
+        // allOverlappables.push(fences);
+        fences.push(new Fence(350, 100, 'normal_y', 10));
+        for (let i = 0; i < 10; i++) {
+            heals.push(Heal.randomHeal(allOverlappables));
+        }
     }
 
     //it's needed to start with blue player
@@ -244,13 +250,17 @@ function nextRound() {
     console.log('next round');
     timerO.start();
 
-    heals.push(Heal.randomHeal(allOverlappables));
-    fuels.push(Fuel.randomFuel(allOverlappables));
+    // heals.push(Heal.randomHeal(allOverlappables));
+    // fuels.push(Fuel.randomFuel(allOverlappables));
     updateFrame()
 
     activePlayer.turn().then(() => {
         startNextRound();
     });
+
+    // getPathAStar(activeTank, 200, 200);
+
+
 
 }
 
@@ -436,7 +446,6 @@ function drawAim(tankParam) {
 }
 
 export function updateFrame() {
-    console.log('update frame');
     context.drawImage(images['desert'], 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     if (activeTank && activeTank.isAiming) {
@@ -458,6 +467,8 @@ export function updateFrame() {
     tanks.forEach((tank) => {
         tank.draw();
     });
+
+    Player.drawUtilityHeatMap();
 
     updateInfoPanels();
 }
