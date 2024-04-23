@@ -115,10 +115,10 @@ export class Fence extends Rectagle{
     static randomWalls(image, allOvarlappables) {
         let result = [];
         let numbersOfTypes = {
-            normal_x: 2,
-            normal_y: 3,
-            normal_round: 1,
-            tank_trap: 1
+            normal_x: 0,
+            normal_y: 0,
+            normal_round: 0,
+            tank_trap: 4
         };
 
         for (let type in numbersOfTypes) {

@@ -125,7 +125,7 @@ export class Player {
                             bestNeighbour = direction;
                         }
                     }
-                    if (bestNeighbour !== null && maxUtility > currunetUtility + 0.0001) {
+                    if (bestNeighbour !== null && maxUtility > currunetUtility + 0.0001 && activeTank.fuel > 10) {
                         console.log('Better move', bestNeighbour);
                         activeTank.move(bestNeighbour);
                     } else {
@@ -140,6 +140,17 @@ export class Player {
             }
 
             function shoot() {
+                const botLevel = 0.5;
+                let random = Math.random();
+                console.log('Random', random);
+                if (random > botLevel) {
+                    Player.endRound();
+                    activeTank.shoot().then(() => {
+                        startNextRound();
+                    });
+                    return;
+                }
+                console.log('no random shoot');
                 let loopCounter = 0;
                 // Player.endRound();
                 let originalAngle = activeTank.angle;
@@ -271,6 +282,7 @@ export class Player {
     }
 
     static drawUtilityHeatMap() {
+        return;
         if (!activeTank) {
             return;
         }

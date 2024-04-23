@@ -116,12 +116,12 @@ function init() {
 
 
     if (GAME_MODE === 'pvc') {
-        bluePlayer.isBot = true;
+        bluePlayer.isBot = false;
         redPlayer.isBot = true;
     }
     players.push(bluePlayer);
     players.push(redPlayer);
-    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'up', images['blue_light'], context));
+    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], context));
     bluePlayer.addTank(new Tank(100, 300, 'blue', 'medium', 'right', images['blue_medium'], context));
     bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], context));
     redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], context));
@@ -150,12 +150,15 @@ function init() {
 
 
         heals.push(new Heal(200, 200));
-        heals.push(new Heal(300, 200));
+        heals.push(new Heal(500, 400));
+        heals.push(new Heal(500, 400));
 
         // for (let i = 0; i < 10; i++) {
         //     heals.push(Heal.randomHeal(allOverlappables));
         // }
 
+        fuels.push(new Fuel(700, 270));
+        fuels.push(new Fuel(700, 270));
         fuels.push(new Fuel(700, 270));
         fuels.push(new Fuel(500, 150));
 
@@ -164,10 +167,8 @@ function init() {
     //-----------RANDOM INITIALIZATION----------------
 
     if (randomInit) {
-        // allOverlappables.push(tanks);
-        // fences = Fence.randomWalls(images['fence'], allOverlappables);
-        // allOverlappables.push(fences);
-        fences.push(new Fence(350, 100, 'normal_y', 10));
+        fences = Fence.randomWalls(images['fence'], allOverlappables);
+        allOverlappables.push(fences);
         for (let i = 0; i < 10; i++) {
             heals.push(Heal.randomHeal(allOverlappables));
         }
