@@ -1,10 +1,12 @@
 import {Random} from "../Services/Random.js";
 import {Overlappable} from "../Services/Overlappable.js";
+import {Rectagle} from "./Rectagle.js";
 
-export class Fence {
+export class Fence extends Rectagle{
     static image;
 
     constructor(x, y, type, blockSize) {
+        super(x, y, 0, 0);
         this.x = x;
         this.y = y;
         this.blockSzie = blockSize;

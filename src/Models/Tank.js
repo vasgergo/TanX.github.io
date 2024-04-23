@@ -8,7 +8,7 @@ import {
     sounds,
     drawExplosionAnimation,
     objectAt,
-    updateFrame
+    updateFrame, activeTank
 
 } from '../game.js';
 import {Fence} from "./Fence.js";
@@ -107,16 +107,16 @@ export class Tank extends Rectagle {
 
     static paramInterval = {
         p1: {
-            // min: 40,
-            // max: 120,
-            min: 10,
-            max: 250,
+            min: 20,
+            max: 200,
+            // min: 10,
+            // max: 250,
         },
         p2: {
-            // min: 30,
-            // max: 100,
-            min: 10,
-            max: 250,
+            min: 15,
+            max: 180,
+            // min: 10,
+            // max: 250,
         }
     }
 
@@ -414,6 +414,21 @@ export class Tank extends Rectagle {
                 }, 5);
             });
         });
+    }
+
+    shootResult() {
+        let destX;
+        let destY;
+        let distance = 0;
+        while (true) {
+            distance++;
+            destX = this.shootFunction(distance).x;
+            destY = this.shootFunction(distance).y;
+            let objectAtPoint = objectAt(destX, destY);
+            if (objectAtPoint !== undefined) {
+                return objectAtPoint;
+            }
+        }
     }
 
 }

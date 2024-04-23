@@ -121,7 +121,7 @@ function init() {
     }
     players.push(bluePlayer);
     players.push(redPlayer);
-    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], context));
+    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'up', images['blue_light'], context));
     bluePlayer.addTank(new Tank(100, 300, 'blue', 'medium', 'right', images['blue_medium'], context));
     bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], context));
     redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], context));
@@ -134,7 +134,7 @@ function init() {
         });
     });
 
-    let randomInit = true;
+    let randomInit = false;
 
     allOverlappables.push(fences, heals, fuels, tanks);
 
@@ -142,18 +142,19 @@ function init() {
 
     if (!randomInit) {
 
-        fences.push(new Fence(350, 100, 'normal_y', 10));
-        fences.push(new Fence(350, 400, 'normal_y', 10));
-        fences.push(new Fence(700, 100, 'normal_y', 10));
-        fences.push(new Fence(700, 400, 'normal_y', 10));
+        fences.push(new Fence(350, 100, 'tank_trap', 10));
+        fences.push(new Fence(350, 400, 'tank_trap', 10));
+        fences.push(new Fence(700, 100, 'tank_trap', 10));
+        fences.push(new Fence(700, 400, 'tank_trap', 10));
         fences.push(new Fence(480, 250, 'tank_trap', 10));
 
-        heals.push(new Heal(300, 300));
-        heals.push(new Heal(800, 300));
-        heals.push(new Heal(500, 450));
-        heals.push(new Heal(900, 45));
-        // heals.push(new Heal(500, 450));
-        // heals.push(new Heal(900, 45));
+
+        heals.push(new Heal(200, 200));
+        heals.push(new Heal(300, 200));
+
+        // for (let i = 0; i < 10; i++) {
+        //     heals.push(Heal.randomHeal(allOverlappables));
+        // }
 
         fuels.push(new Fuel(700, 270));
         fuels.push(new Fuel(500, 150));
@@ -259,7 +260,6 @@ function nextRound() {
     });
 
     // getPathAStar(activeTank, 200, 200);
-
 
 
 }
@@ -556,20 +556,5 @@ function setGameContainerSizeAndPosition() {
     gameContainer.style.top = centerOfWindowHeight - (gameContainerCurr_height / 2) + 'px';
     gameContainer.style.left = centerOfWindowWidth - (gameContainerCurr_width / 2) + 'px';
 
-}
-
-function shootResult() {
-    let destX;
-    let destY;
-    let distance = 0;
-    while (true) {
-        distance++;
-        destX = activeTank.shootFunction(distance).x;
-        destY = activeTank.shootFunction(distance).y;
-        let objectAtPoint = objectAt(destX, destY);
-        if (objectAtPoint !== undefined) {
-            return objectAtPoint;
-        }
-    }
 }
 
