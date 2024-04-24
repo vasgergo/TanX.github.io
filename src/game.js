@@ -116,7 +116,7 @@ function init() {
 
 
     if (GAME_MODE === 'pvc') {
-        bluePlayer.isBot = false;
+        bluePlayer.isBot = true;
         redPlayer.isBot = true;
     }
     players.push(bluePlayer);
@@ -196,7 +196,13 @@ export function startNextRound() {
         console.log('game over');
         window.location.href = 'index.html';
     } else {
+        for (let i = 0; i < tanks.length; i++) {
+            tanks[i].addFuel(30);
+        }
+        heals.push(Heal.randomHeal(allOverlappables));
+        fuels.push(Fuel.randomFuel(allOverlappables));
         timerO.reset();
+
         let roundInfo = window.document.getElementById('roundInfo');
         let nextPlayerColor = window.document.getElementById('nextPlayerColor');
         window.document.getElementById('timer').innerText = timerO.getTime();
@@ -252,8 +258,7 @@ function nextRound() {
     console.log('next round');
     timerO.start();
 
-    // heals.push(Heal.randomHeal(allOverlappables));
-    // fuels.push(Fuel.randomFuel(allOverlappables));
+
     updateFrame()
 
     activePlayer.turn().then(() => {
@@ -508,15 +513,7 @@ function updateInfoPanelTankColor() {
     }
 }
 
-function menuOpen() {
-    let menu = document.getElementById('menu');
-    menu.style.display = 'flex';
-}
 
-function menuClose() {
-    let menu = document.getElementById('menu');
-    menu.style.display = 'none';
-}
 
 function updateInfoPanels() {
     let actualTankColor;

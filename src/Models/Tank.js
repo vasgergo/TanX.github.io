@@ -37,7 +37,7 @@ export class Tank extends Rectagle {
                 this.width = 30;
                 this.height = 30;
                 this.maxHealth = 100;
-                this.health = 100;
+                this.health = 99;
                 this.maxFuel = 100;
                 this.fuel = 100;
                 this.consumption = 30;

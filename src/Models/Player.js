@@ -55,7 +55,9 @@ export class Player {
     static getUtility(x, y) {
         let utility = 0;
         for (let i = 0; i < heals.length; i++) {
-            utility += 10 / Math.pow(Player.getDistance(x, y, heals[i].getCenter().x, heals[i].getCenter().y), 1);
+            if (activeTank.health !== activeTank.maxHealth) {
+                utility += 10 / Math.pow(Player.getDistance(x, y, heals[i].getCenter().x, heals[i].getCenter().y), 1);
+            }
         }
 
         tanks.filter(tank => tank !== activeTank).forEach(tank => {
@@ -66,25 +68,34 @@ export class Player {
             utility -= 500 / Math.pow(distance, 2);
         });
 
-        fences.forEach(fence => {
-            let distance = Player.getDistance(x, y, fence.getCenter().x, fence.getCenter().y);
-            if (distance === 0) {
-                distance = 0.00001;
-            }
-            utility -= 500 / Math.pow(distance, 2);
-        });
-
         // fences.forEach(fence => {
-        //     if (fence.isOverlap({
-        //         x: x + 5 - activeTank.width / 2,
-        //         y: y + 5 - activeTank.height / 2,
-        //         width: activeTank.width,
-        //         height: activeTank.height
-        //     })) {
-        //         utility = 0;
+        //     let distance = Player.getDistance(x, y, fence.getCenter().x, fence.getCenter().y);
+        //     if (distance === 0) {
+        //         distance = 0.00001;
         //     }
+        //     utility -= 700 / Math.pow(distance, 2);
         // });
+
+        fences.forEach(fence => {
+            // if (fence.isOverlap({
+            //     x: x,
+            //     y: y,
+            //     width: activeTank.width,
+            //     height: activeTank.height
+            // })) {
+            //     utility = -9;
+            // }
+            //cirlce around the fence
+            let distance = Player.getDistance(x, y, fence.getCenter().x, fence.getCenter().y);
+            let radius = 120;
+            if (distance < radius) {
+                utility = -9;
+            }
+        });
         // console.log(utility);
+        if (x < 60 || x + 60 > canvas.width || y < 60 || y + 60 > canvas.height) {
+            utility = -9;
+        }
         return utility;
     }
 
@@ -140,7 +151,7 @@ export class Player {
             }
 
             function shoot() {
-                const botLevel = 0.5;
+                const botLevel = 1;
                 let random = Math.random();
                 console.log('Random', random);
                 if (random > botLevel) {
@@ -187,7 +198,6 @@ export class Player {
                 console.log('Shoot not found');
                 Player.endRound();
                 startNextRound();
-
             }
 
         });
@@ -282,7 +292,7 @@ export class Player {
     }
 
     static drawUtilityHeatMap() {
-        return;
+        // return;
         if (!activeTank) {
             return;
         }

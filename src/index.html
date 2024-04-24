@@ -51,7 +51,7 @@
     <!--    redirect to game.html-->
     <button id="pvp">Player VS Player</button>
     <button id="pvc">Player VS Computer</button>
-    <button id="htp" disabled>How to play</button>
+    <button id="htp">How to play</button>
     <button id="settings" disabled>Settings</button>
 </div>
 
@@ -64,6 +64,10 @@
     document.getElementById("pvc").addEventListener("click", function () {
         window.sessionStorage.setItem("playerMode", "pvc");
         window.location.href = "game.html";
+    });
+
+    document.getElementById("htp").addEventListener("click", function () {
+        window.location.href = "howToPlay.html";
     });
 
 </script>
