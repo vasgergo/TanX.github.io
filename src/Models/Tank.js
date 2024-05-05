@@ -49,7 +49,7 @@ export class Tank extends Rectagle {
                 this.width = 45;
                 this.height = 45;
                 this.maxHealth = 150;
-                this.health = 150;
+                this.health = 1;
                 this.maxFuel = 150;
                 this.fuel = 150;
                 this.consumption = 40;
@@ -331,15 +331,23 @@ export class Tank extends Rectagle {
         context.translate(this.x + this.img.width / 2, this.y + this.img.height / 2);
         context.rotate(angle * Math.PI / 180);
 
+        //fuel indicator
         context.fillStyle = 'green';
-        context.fillRect(-this.img.width / 2 - 5, this.img.width / 2, -5, -this.img.width * this.fuel / this.maxFuel); //y jobbra     x hatra    width jobbra   height hatra
+        if (!this.isCrashed) {
+            context.fillRect(-this.img.width / 2 - 5, this.img.width / 2, -5, -this.img.width * this.fuel / this.maxFuel); //y jobbra     x hatra    width jobbra   height hatra
+        }
 
+        //health indicator
         context.fillStyle = 'red';
-
         context.drawImage(this.img, -this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
 
         context.fillRect(this.img.width / 2 + 5, this.img.width / 2, 5, -this.img.width * this.health / this.maxHealth); //y jobbra     x hatra    width jobbra   height hatra
 
+        context.fillStyle = 'rgba(52,52,52,0.8)';
+
+        if (this.isCrashed) {
+            context.fillRect(-this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
+        }
         context.restore();
     }
 

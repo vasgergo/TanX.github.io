@@ -1,2 +1,2 @@
-#TanX
+# [TanX](https://vasgergo.github.io/src/)
 
