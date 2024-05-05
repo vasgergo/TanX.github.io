@@ -6,7 +6,7 @@ import {Fuel} from "./Models/Fuel.js";
 import {Timer} from "./Models/Timer.js";
 // import {Overlappable} from "./Services/Overlappable.js";
 
-const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy', 'blue_light', 'blue_medium', 'fence', 'red_cross', 'fuel', 'heal'];
+const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy', 'blue_light', 'blue_medium', 'fence', 'red_cross', 'fuel', 'heal', 'light1', 'light2', 'light3', 'medium1', 'medium2', 'medium3', 'heavy1', 'heavy2', 'heavy3'];
 
 let CANVAS_WIDTH = document.getElementById('myCanvas').width;
 let CANVAS_HEIGHT = document.getElementById('myCanvas').height;
@@ -21,7 +21,7 @@ let redPlayer;
 let bluePlayer;
 let players = [];
 
-let images = [];
+export let images = [];
 let activePlayer;
 export let activeTank;
 const ROUND_TIME = 30;
@@ -401,7 +401,7 @@ export function objectAt(x, y) {
         }
     }
     for (let i = 0; i < tanks.length; i++) {
-        if (tanks[i].x < x && tanks[i].x + tanks[i].img.width > x && tanks[i].y < y && tanks[i].y + tanks[i].img.height > y) {
+        if (tanks[i].x < x && tanks[i].x + tanks[i].width > x && tanks[i].y < y && tanks[i].y + tanks[i].height > y) {
             return tanks[i];
         }
     }

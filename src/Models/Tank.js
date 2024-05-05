@@ -8,7 +8,9 @@ import {
     sounds,
     drawExplosionAnimation,
     objectAt,
-    updateFrame, activeTank
+    updateFrame,
+    activeTank,
+    images
 
 } from '../game.js';
 import {Fence} from "./Fence.js";
@@ -21,8 +23,9 @@ export class Tank extends Rectagle {
         this.type = type;
         this.team = team;
         this.direction = direction;
-        this.img = image;
-
+        this.sourceImages = [images[type + '1'], images[type + '2'], images[type + '3']];
+        this.sourceImagIndex = 0;
+        this.img = this.sourceImages[0];
         this.isAiming = false;
 
         this.health = undefined;
@@ -34,8 +37,8 @@ export class Tank extends Rectagle {
 
         switch (this.type) {
             case 'light':
-                this.width = 30;
-                this.height = 30;
+                this.width = 40;
+                this.height = 40;
                 this.maxHealth = 100;
                 this.health = 99;
                 this.maxFuel = 100;
@@ -46,8 +49,8 @@ export class Tank extends Rectagle {
                 this.roationSpeed = 5;
                 break;
             case 'medium':
-                this.width = 45;
-                this.height = 45;
+                this.width = 55;
+                this.height = 55;
                 this.maxHealth = 150;
                 this.health = 1;
                 this.maxFuel = 150;
@@ -58,8 +61,8 @@ export class Tank extends Rectagle {
                 this.roationSpeed = 2;
                 break;
             case 'heavy':
-                this.width = 60;
-                this.height = 60;
+                this.width = 70;
+                this.height = 70;
                 this.maxHealth = 200;
                 this.health = 200;
                 this.maxFuel = 200;
@@ -101,6 +104,8 @@ export class Tank extends Rectagle {
                 this.angle = 270;
                 break;
         }
+
+        this.moveAnimationCounter = 0;
 
         this.isCrashed = false;
     }
@@ -144,7 +149,6 @@ export class Tank extends Rectagle {
         updateFrame();
     }
 
-
     setAimParams(p1, p2) {
         if (p1 < Tank.paramInterval.p1.min || p1 > Tank.paramInterval.p1.max || p2 < Tank.paramInterval.p2.min || p2 > Tank.paramInterval.p2.max) {
             console.log('Out of range');
@@ -157,29 +161,29 @@ export class Tank extends Rectagle {
     updateAimParams() {
         switch (this.angle) {
             case 0:
-                this.aimParams.startX = this.x + this.img.width / 2;
+                this.aimParams.startX = this.x + this.width / 2;
                 this.aimParams.startY = this.y;
                 this.aimParams.angleMultiplierX = -1;
                 this.aimParams.angleMultiplierY = -1;
                 this.aimParams.reverse = true;
                 break;
             case 90:
-                this.aimParams.startX = this.x + this.img.width;
-                this.aimParams.startY = this.y + this.img.height / 2;
+                this.aimParams.startX = this.x + this.width;
+                this.aimParams.startY = this.y + this.height / 2;
                 this.aimParams.angleMultiplierX = 1;
                 this.aimParams.angleMultiplierY = -1;
                 this.aimParams.reverse = false;
                 break;
             case 180:
-                this.aimParams.startX = this.x + this.img.width / 2;
-                this.aimParams.startY = this.y + this.img.height;
+                this.aimParams.startX = this.x + this.width / 2;
+                this.aimParams.startY = this.y + this.height;
                 this.aimParams.angleMultiplierX = 1;
                 this.aimParams.angleMultiplierY = 1;
                 this.aimParams.reverse = true;
                 break;
             case 270:
                 this.aimParams.startX = this.x;
-                this.aimParams.startY = this.y + this.img.height / 2;
+                this.aimParams.startY = this.y + this.height / 2;
                 this.aimParams.angleMultiplierX = -1;
                 this.aimParams.angleMultiplierY = 1;
                 this.aimParams.reverse = false;
@@ -258,7 +262,7 @@ export class Tank extends Rectagle {
                 break;
         }
 
-        let tankClone = new Tank(this.x + x, this.y + y, this.team, this.type, this.direction, this.img, this.context)
+        let tankClone = new Tank(this.x + x, this.y + y, this.team, this.type, this.direction, this.img, this.context)//TODO: img
 
 
         //check if it is out of canvas
@@ -305,6 +309,16 @@ export class Tank extends Rectagle {
             }
         }
 
+        this.moveAnimationCounter++;
+        if (this.moveAnimationCounter === 10) {
+            this.moveAnimationCounter = 0;
+            this.sourceImagIndex++;
+            if (this.sourceImagIndex === 3) {
+                this.sourceImagIndex = 0;
+            }
+            this.img = this.sourceImages[this.sourceImagIndex];
+        }
+
         //if there is no fence or tank then move
         this.x += x;
         this.y += y;
@@ -328,25 +342,30 @@ export class Tank extends Rectagle {
     draw() {
         let angle = this.angle;
         context.save();
-        context.translate(this.x + this.img.width / 2, this.y + this.img.height / 2);
+        context.translate(this.x + this.width / 2, this.y + this.height / 2);
         context.rotate(angle * Math.PI / 180);
+
+        //team frame
+        context.fillStyle = this.team === 'red' ? 'red' : 'blue';
+        context.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
 
         //fuel indicator
         context.fillStyle = 'green';
         if (!this.isCrashed) {
-            context.fillRect(-this.img.width / 2 - 5, this.img.width / 2, -5, -this.img.width * this.fuel / this.maxFuel); //y jobbra     x hatra    width jobbra   height hatra
+            context.fillRect(-this.width / 2 - 5, this.width / 2, -5, -this.width * this.fuel / this.maxFuel); //y jobbra     x hatra    width jobbra   height hatra
         }
 
         //health indicator
         context.fillStyle = 'red';
-        context.drawImage(this.img, -this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
+        context.fillRect(this.width / 2 + 5, this.width / 2, 5, -this.width * this.health / this.maxHealth); //y jobbra     x hatra    width jobbra   height hatra
 
-        context.fillRect(this.img.width / 2 + 5, this.img.width / 2, 5, -this.img.width * this.health / this.maxHealth); //y jobbra     x hatra    width jobbra   height hatra
+        //tank image
+        context.drawImage(this.img, -this.width / 2, -this.height / 2, this.width, this.height);
 
         context.fillStyle = 'rgba(52,52,52,0.8)';
 
         if (this.isCrashed) {
-            context.fillRect(-this.img.width / 2, -this.img.height / 2, this.img.width, this.img.height);
+            context.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
         }
         context.restore();
     }
