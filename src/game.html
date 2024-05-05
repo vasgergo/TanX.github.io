@@ -60,8 +60,7 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
-            width: 50px;
-            height: 50px;
+            width: 100px;
         }
 
         h1 {
@@ -76,7 +75,10 @@
         }
 
         .controlPanel {
-            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
             border-radius: 10px;
             margin: 10px 5px;
             text-align: center;
@@ -84,7 +86,7 @@
         }
 
         .infoPanel {
-            height: 325px;
+            height: 428px;
             margin: 10px 5px;
             padding: 1px;
             border-radius: 10px;
@@ -93,7 +95,7 @@
 
         .tank {
             border: black solid 1px;
-            margin: 2px 3px;
+            margin: 3px 3px 10px 3px;
             border-radius: 10px;
             box-shadow: rgb(128, 128, 128) 2px 2px 2px;
         }
@@ -101,7 +103,7 @@
 
         .tankInfoName {
             font-weight: bold;
-            margin: 2px 5px;
+            margin: 5px 5px 10px 5px;
             text-align: center;
             font-size: 18px;
         }
@@ -109,7 +111,7 @@
         .tankData {
             font-size: 18px;
             margin: 3px 5px;
-            line-height: 0.9;
+            /*line-height: 1.1;*/
         }
 
         #timer {
@@ -163,10 +165,10 @@
             margin-top: 40px;
             font-style: italic;
         }
+
         #aiThinking {
             font-size: 40px;
             margin-top: 40px;
-            /*legyen dőlt*/
         }
 
 
@@ -199,8 +201,8 @@
     <div id="timer"></div>
     <div id="bluePanel" class="panel">
         <h1 class="playerH">Blue Player</h1>
-        <img id="blueActiveTankImg" class="activeTankImg" alt="no pic">
         <div id="blueControl" class="controlPanel">
+            <img id="blueActiveTankImg" class="activeTankImg" alt="no pic">
         </div>
         <div id="blueInfoPanel" class="infoPanel">
             <div id="blue_light" class="tank">
@@ -229,8 +231,8 @@
     <canvas id="myCanvas" width="1100" height="680"></canvas>
     <div id="redPanel" class="panel">
         <h1 class="playerH">Red Player</h1>
-        <img id="redActiveTankImg" class="activeTankImg" alt="no pic">
         <div id="redControl" class="controlPanel">
+            <img id="redActiveTankImg" class="activeTankImg" alt="no pic">
         </div>
         <div id="redInfoPanel" class="infoPanel">
             <div id="red_light" class="tank">
