@@ -5,7 +5,6 @@ import {Heal} from "./Models/Heal.js";
 import {Fuel} from "./Models/Fuel.js";
 import {Timer} from "./Models/Timer.js";
 // import {Overlappable} from "./Services/Overlappable.js";
-// import './Menu/menu.css';
 
 const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy', 'blue_light', 'blue_medium', 'fence', 'red_cross', 'fuel', 'heal'];
 
@@ -121,7 +120,7 @@ function init() {
     }
     players.push(bluePlayer);
     players.push(redPlayer);
-    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right', images['blue_light'], context));
+    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'up', images['blue_light'], context));
     bluePlayer.addTank(new Tank(100, 300, 'blue', 'medium', 'right', images['blue_medium'], context));
     bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], context));
     redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], context));

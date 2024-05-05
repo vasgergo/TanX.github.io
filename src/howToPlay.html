@@ -2,9 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <title>TanX</title>
+    <style>
+        html {
+            font-family: "Times new roman", sans-serif;
+        }
+
+        body {
+            background-color: darkgreen;
+        }
+
+        #mainMenu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 10vw;
+            margin: 20px;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            width: 40vw;
+            padding: 20px 20px;
+            font-size: 2.5vw;
+            border: 3px solid #000;
+            border-radius: 15px;
+            background-color: lightgreen;
+            cursor: pointer;
+        }
+
+        p {
+            font-size: 2vw;
+        }
+
+        #myCanvas {
+            width: 1100px;
+            height: 680px;
+            border: solid 5px #000000;
+            border-radius: 10px;
+            position: absolute;
+            top: 6px;
+            left: 213px;
+        }
+
+    </style>
 </head>
 <body>
-
+<div id="mainMenu">
+    <h1>Controls</h1>
+    <div>
+        <p>Move: W, A, S, D</p>
+        <p>Rotation: 2, 4, 6, 8 (numPad)</p>
+        <p>Aiming: Arrows</p>
+        <p>Shoot: Enter</p>
+    </div>
+</div>
+<!--<div id="gameContainer">-->
+<!--    <canvas id="myCanvas" width="1100" height="680"></canvas>-->
+<!--</div>-->
+<!--<script type="module" src="htp.js"></script>-->
 </body>
 </html>

@@ -292,7 +292,7 @@ export class Player {
     }
 
     static drawUtilityHeatMap() {
-        // return;
+        return;
         if (!activeTank) {
             return;
         }
