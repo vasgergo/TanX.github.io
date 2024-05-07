@@ -335,10 +335,6 @@ export class Tank extends Rectagle {
         }
     }
 
-    isOverlap(tank) {
-        return this.x < tank.x + tank.width && this.x + this.width > tank.x && this.y < tank.y + tank.height && this.y + this.height > tank.y;
-    }
-
     draw() {
         let angle = this.angle;
         context.save();

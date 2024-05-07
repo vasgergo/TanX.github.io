@@ -44,7 +44,7 @@ export class Fence extends Rectagle{
         }
 
 
-        function createShape(type) {
+        function createShape(type) { //type: normal_x, normal_y, normal_round, tank_trap
             let shape = [];
             switch (type) {
                 case 'normal_x':
@@ -138,7 +138,6 @@ export class Fence extends Rectagle{
                 max--;
             }
         }
-        console.log(result);
 
         return result;
 

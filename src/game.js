@@ -127,25 +127,29 @@ function init() {
     redPlayer.addTank(new Tank(890, 310, 'red', 'medium', 'left', images['red_medium'], context));
     redPlayer.addTank(new Tank(950, 430, 'red', 'heavy', 'left', images['red_heavy'], context));
 
-    players.forEach((player) => {
-        player.tanks.forEach((tank) => {
-            tanks.push(tank);
-        });
-    });
 
-    let randomInit = false;
+    for (let i = 0; i < players.length; i++) {
+        for (let j = 0; j < players[i].tanks.length; j++) {
+            tanks.push(players[i].tanks[j]);
+        }
+    }
 
     allOverlappables.push(fences, heals, fuels, tanks);
+
+
+    let randomInit = true;
+
+    fences.push(new Fence(350, 100, 'tank_trap', 10));
+    fences.push(new Fence(350, 400, 'tank_trap', 10));
+    fences.push(new Fence(700, 100, 'tank_trap', 10));
+    fences.push(new Fence(700, 400, 'tank_trap', 10));
+    fences.push(new Fence(480, 250, 'tank_trap', 10));
 
     //----------PREDEFINED INITIALIZATION----------------
 
     if (!randomInit) {
 
-        fences.push(new Fence(350, 100, 'tank_trap', 10));
-        fences.push(new Fence(350, 400, 'tank_trap', 10));
-        fences.push(new Fence(700, 100, 'tank_trap', 10));
-        fences.push(new Fence(700, 400, 'tank_trap', 10));
-        fences.push(new Fence(480, 250, 'tank_trap', 10));
+
 
 
         heals.push(new Heal(200, 200));
@@ -161,17 +165,28 @@ function init() {
         fuels.push(new Fuel(700, 270));
         fuels.push(new Fuel(500, 150));
 
-        console.log(allOverlappables);
     }
     //-----------RANDOM INITIALIZATION----------------
 
     if (randomInit) {
-        fences = Fence.randomWalls(images['fence'], allOverlappables);
-        allOverlappables.push(fences);
-        for (let i = 0; i < 10; i++) {
-            heals.push(Heal.randomHeal(allOverlappables));
+
+
+        for (let i = 0; i < tanks.length; i++) {
+            tanks[i].placeRandomly(allOverlappables);
+            console.log(tanks[i]);
         }
+
+        for (let i = 0; i < 10; i++) {
+            heals.push(new Heal(0, 0).placeRandomly(allOverlappables));
+        }
+
+        for (let i = 0; i < 10; i++) {
+            fuels.push(new Fuel(0, 0).placeRandomly(allOverlappables));
+        }
+
+
     }
+
 
     //it's needed to start with blue player
     activePlayer = redPlayer;
@@ -268,7 +283,6 @@ function nextRound() {
 
 
 }
-
 
 function getPathAStar(tank, destX, destY) {
     console.log('getPathAStar');
@@ -511,8 +525,6 @@ function updateInfoPanelTankColor() {
         document.getElementById(tanks[i].team + '_' + tanks[i].type).style.backgroundColor = color;
     }
 }
-
-
 
 function updateInfoPanels() {
     let actualTankColor;

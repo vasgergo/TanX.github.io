@@ -1,25 +1,18 @@
 import {Overlappable} from "../Services/Overlappable.js";
 import {Random} from "../Services/Random.js";
+import {Rectagle} from "./Rectagle.js";
 
-export class Fuel{
+export class Fuel extends Rectagle{
     static image ;
     static ctx;
 
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
-
-        this.width = 30;
-        this.height = 30;
+        super(x, y, 30, 30);
         this.amount = 50;
     }
 
     draw() {
         Fuel.ctx.drawImage(Fuel.image, this.x, this.y, this.width, this.height);
-    }
-
-    isOverlap(tank) {
-        return tank.x < this.x + this.width && tank.x + tank.img.width > this.x && tank.y < this.y + this.height && tank.y + tank.img.height > this.y;
     }
 
     static randomFuel(allOverlappables) {

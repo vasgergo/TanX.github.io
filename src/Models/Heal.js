@@ -15,9 +15,6 @@ export class Heal extends Rectagle{
         Heal.ctx.drawImage(Heal.image, this.x, this.y, this.width, this.height);
     }
 
-    isOverlap(tank) {
-        return tank.x < this.x + this.width && tank.x + tank.img.width > this.x && tank.y < this.y + this.height && tank.y + tank.img.height > this.y;
-    }
 
     static randomHeal(allOverlappables) {
         let result;
