@@ -17,7 +17,7 @@ import {Fence} from "./Fence.js";
 import {Rectagle} from "./Rectagle.js";
 
 export class Tank extends Rectagle {
-    constructor(x, y, team, type, direction, image) {
+    constructor(x, y, team, type, direction) {
         super(x, y, null, null);
 
         this.type = type;
@@ -82,12 +82,15 @@ export class Tank extends Rectagle {
             p2: 50,
             reflection: 1,
 
+
+            //angle defines these values
             angleMultiplierX: undefined,
             angleMultiplierY: undefined,
             reverse: undefined,
             startX: undefined,
             startY: undefined,
         }
+
 
         this.angle = 0;
         switch (this.direction) {
@@ -125,6 +128,25 @@ export class Tank extends Rectagle {
         }
     }
 
+    getAimParams() {
+        return {
+            p1: this.aimParams.p1,
+            p2: this.aimParams.p2,
+            reflection: this.aimParams.reflection,
+        };
+    }
+
+    setAimParams(aimParams) {
+        if (aimParams.p1 < Tank.paramInterval.p1.min || aimParams.p1 > Tank.paramInterval.p1.max || aimParams.p2 < Tank.paramInterval.p2.min || aimParams.p2 > Tank.paramInterval.p2.max) {
+            console.log('SetAimParams: Out of range');
+        } else {
+            this.aimParams.p1 = aimParams.p1;
+            this.aimParams.p2 = aimParams.p2;
+            this.aimParams.reflection = aimParams.reflection;
+        }
+
+    }
+
     addHealth(amount) {
         this.health += amount;
         if (this.health > this.maxHealth) {
@@ -149,14 +171,13 @@ export class Tank extends Rectagle {
         updateFrame();
     }
 
-    setAimParams(p1, p2) {
-        if (p1 < Tank.paramInterval.p1.min || p1 > Tank.paramInterval.p1.max || p2 < Tank.paramInterval.p2.min || p2 > Tank.paramInterval.p2.max) {
-            console.log('Out of range');
-        } else {
-            this.aimParams.p1 = p1;
-            this.aimParams.p2 = p2;
-        }
+    setAngle(angle) {
+        angle = angle % 360;
+        this.angle = angle;
+        this.updateAimParams();
     }
+
+
 
     updateAimParams() {
         switch (this.angle) {
@@ -231,12 +252,10 @@ export class Tank extends Rectagle {
             updateFrame();
 
             if (this.angle === destinationAngle) {
-                console.log('clear');
                 clearInterval(interval);
                 callback();
             }
         }, 20);
-
     }
 
     move(direction) {
@@ -394,8 +413,6 @@ export class Tank extends Rectagle {
 
                 let shootInterval = setInterval(() => {
                     distance += 1;
-
-                    console.log('shoot interval');
 
                     destX = this.shootFunction(distance).x;
                     destY = this.shootFunction(distance).y;

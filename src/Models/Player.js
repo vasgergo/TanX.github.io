@@ -9,6 +9,8 @@ import {
 import {Rectagle} from "./Rectagle.js";
 import {Tank} from "./Tank.js";
 
+
+
 export class Player {
     constructor(color, isBot = false) {
         this.color = color;
@@ -17,6 +19,7 @@ export class Player {
         this.tankIndex = -1;
         this.activeTank = null;
     }
+
 
     addTank(tank) {
         this.tanks.push(tank);
@@ -114,15 +117,14 @@ export class Player {
     }
 
     turn() {
-
         return new Promise((resolve, reject) => {
             activeTank.isAiming = true;
             updateFrame();
-
             timerO.addEventListener('OnTimeUp', Player.timeUp);
 
             if (this.isBot) {
                 console.log('Bot turn');
+
                 let counter = 0;
                 let interval = setInterval(() => {
                     let currunetUtility = Player.getUtility(activeTank.getCenter().x, activeTank.getCenter().y);
@@ -150,10 +152,39 @@ export class Player {
                 Player.addControls();
             }
 
+            function getPossibleShootAngles() {
+                let result = new Set;
+                tanks.forEach(tank => {
+                    if (tank !== activeTank && !tank.isCrashed && tank.team !== activeTank.team) {
+                        //result can be 0, 90, 180, 270
+                        let angle = Math.atan2(tank.getCenter().y - activeTank.getCenter().y, tank.getCenter().x - activeTank.getCenter().x) * 180 / Math.PI;
+
+                        angle += 90;
+                        if (angle < 0) {
+                            angle += 360;
+                        }
+                        if (angle > 315 || angle < 45) {
+                            angle = 0;
+                        }
+                        if (angle > 45 && angle < 135) {
+                            angle = 90;
+                        }
+                        if (angle > 135 && angle < 225) {
+                            angle = 180;
+                        }
+                        if (angle > 225 && angle < 315) {
+                            angle = 270;
+                        }
+                        result.add(angle);
+                    }
+                });
+                return result;
+            }
+
+
             function shoot() {
                 const botLevel = 1;
                 let random = Math.random();
-                console.log('Random', random);
                 if (random > botLevel) {
                     Player.endRound();
                     activeTank.shoot().then(() => {
@@ -162,42 +193,78 @@ export class Player {
                     return;
                 }
                 console.log('no random shoot');
-                let loopCounter = 0;
-                // Player.endRound();
+
+                let tries = 0;
                 let originalAngle = activeTank.angle;
+                let originalP1 = activeTank.aimParams.p1;
+                let originalP2 = activeTank.aimParams.p2;
                 for (let l = 0; l < 271; l += 90) {
                     activeTank.angle = l;
                     activeTank.updateAimParams();
                     for (let i = Tank.paramInterval.p1.min; i < Tank.paramInterval.p1.max; i++) {
                         for (let j = Tank.paramInterval.p2.min; j < Tank.paramInterval.p2.max; j++) {
-                            for (let k = 0; k < 1; k++) {
-                                loopCounter++;
+                            for (let k = 0; k < 2; k++) {
+                                tries++;
                                 activeTank.changeReflection();
                                 activeTank.aimParams.p1 = i;
                                 activeTank.aimParams.p2 = j;
                                 let result = activeTank.shootResult();
                                 if (result instanceof Tank && result.team !== activeTank.team && !result.isCrashed) {
-                                    console.log('Shoot to tank');
+                                    console.log('Shoot found');
                                     activeTank.angle = originalAngle;
                                     activeTank.isAiming = false;
                                     activeTank.rotationAnimation(l, () => {
                                         activeTank.angle = l;
-                                        Player.endRound();
-                                        activeTank.shoot().then(() => {
-                                            startNextRound();
+                                        // activeTank.isAiming = true;
+                                        updateFrame();
+                                        let destP1 = activeTank.aimParams.p1;
+                                        let destP2 = activeTank.aimParams.p2;
+                                        activeTank.aimParams.p1 = originalP1;
+                                        activeTank.aimParams.p2 = originalP2;
+                                        aimingAnimation(destP1, destP2).then(() => {
+                                            Player.endRound();
+                                            activeTank.shoot().then(() => {
+                                                startNextRound();
+                                            });
                                         });
+
                                     });
-                                    console.log('Loop counter', loopCounter);
+                                    console.log('TRIES', tries);
                                     return;
                                 }
                             }
                         }
                     }
                 }
-                console.log('Loop counter', loopCounter);
+                console.log('Loop counter', tries);
                 console.log('Shoot not found');
                 Player.endRound();
                 startNextRound();
+
+            }
+
+            function aimingAnimation(destP1, destP2) {
+                activeTank.isAiming = true;
+                return new Promise((resolve, reject) => {
+                    let aimingInterval = setInterval(() => {
+                        if (activeTank.aimParams.p1 < destP1) {
+                            activeTank.addToAimParams(1, 0);
+                        } else if (activeTank.aimParams.p1 > destP1) {
+                            activeTank.addToAimParams(-1, 0);
+                        }
+                        if (activeTank.aimParams.p2 < destP2) {
+                            activeTank.addToAimParams(0, 1);
+                        } else if (activeTank.aimParams.p2 > destP2) {
+                            activeTank.addToAimParams(0, -1);
+                        }
+                        updateFrame();
+                        if (activeTank.aimParams.p1 === destP1 && activeTank.aimParams.p2 === destP2) {
+                            clearInterval(aimingInterval);
+                            activeTank.isAiming = false;
+                            resolve();
+                        }
+                    }, 50);
+                });
             }
 
         });

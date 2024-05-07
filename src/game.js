@@ -120,12 +120,12 @@ function init() {
     }
     players.push(bluePlayer);
     players.push(redPlayer);
-    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'up', images['blue_light'], context));
-    bluePlayer.addTank(new Tank(100, 300, 'blue', 'medium', 'right', images['blue_medium'], context));
-    bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right', images['blue_heavy'], context));
-    redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left', images['red_light'], context));
-    redPlayer.addTank(new Tank(890, 310, 'red', 'medium', 'left', images['red_medium'], context));
-    redPlayer.addTank(new Tank(950, 430, 'red', 'heavy', 'left', images['red_heavy'], context));
+    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'up'));
+    bluePlayer.addTank(new Tank(100, 300, 'blue', 'medium', 'right'));
+    bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right'));
+    redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left'));
+    redPlayer.addTank(new Tank(890, 310, 'red', 'medium', 'left'));
+    redPlayer.addTank(new Tank(950, 430, 'red', 'heavy', 'left'));
 
 
     for (let i = 0; i < players.length; i++) {
@@ -148,8 +148,6 @@ function init() {
     //----------PREDEFINED INITIALIZATION----------------
 
     if (!randomInit) {
-
-
 
 
         heals.push(new Heal(200, 200));
@@ -176,11 +174,11 @@ function init() {
             console.log(tanks[i]);
         }
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 3; i++) {
             heals.push(new Heal(0, 0).placeRandomly(allOverlappables));
         }
 
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 3; i++) {
             fuels.push(new Fuel(0, 0).placeRandomly(allOverlappables));
         }
 
