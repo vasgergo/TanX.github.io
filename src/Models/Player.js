@@ -4,11 +4,10 @@ import {
     pressed_down_keys,
     activeTank,
     sounds,
-    timerO, heals, canvas, fences, tanks, objectAt,
+    timerO, heals, canvas, fences, tanks, objectAt, fuels,
 } from "../game.js";
 import {Rectagle} from "./Rectagle.js";
 import {Tank} from "./Tank.js";
-
 
 
 export class Player {
@@ -63,31 +62,23 @@ export class Player {
             }
         }
 
+        for (let i = 0; i < fuels.length; i++) {
+            if (activeTank.fuel !== activeTank.maxFuel) {
+                utility += 10 / Math.pow(Player.getDistance(x, y, fuels[i].getCenter().x, fuels[i].getCenter().y), 1);
+            }
+        }
+
         tanks.filter(tank => tank !== activeTank).forEach(tank => {
             let distance = Player.getDistance(x, y, tank.getCenter().x, tank.getCenter().y);
-            if (distance === 0) {
-                distance = 0.00001;
+            let radius = Tank.getRadiusToNotOverlap(activeTank, tank);
+            if (distance < radius) {
+                utility = -9;
             }
-            utility -= 500 / Math.pow(distance, 2);
         });
 
-        // fences.forEach(fence => {
-        //     let distance = Player.getDistance(x, y, fence.getCenter().x, fence.getCenter().y);
-        //     if (distance === 0) {
-        //         distance = 0.00001;
-        //     }
-        //     utility -= 700 / Math.pow(distance, 2);
-        // });
 
         fences.forEach(fence => {
-            // if (fence.isOverlap({
-            //     x: x,
-            //     y: y,
-            //     width: activeTank.width,
-            //     height: activeTank.height
-            // })) {
-            //     utility = -9;
-            // }
+
             //cirlce around the fence
             let distance = Player.getDistance(x, y, fence.getCenter().x, fence.getCenter().y);
             let radius = 120;
@@ -96,7 +87,7 @@ export class Player {
             }
         });
         // console.log(utility);
-        if (x < 60 || x + 60 > canvas.width || y < 60 || y + 60 > canvas.height) {
+        if (x < activeTank.width/2 || x + activeTank.width/2 > canvas.width || y < activeTank.height/2 || y + activeTank.height/2 > canvas.height) {
             utility = -9;
         }
         return utility;
@@ -359,7 +350,7 @@ export class Player {
     }
 
     static drawUtilityHeatMap() {
-        return;
+        // return;
         if (!activeTank) {
             return;
         }

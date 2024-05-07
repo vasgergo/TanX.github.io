@@ -178,7 +178,6 @@ export class Tank extends Rectagle {
     }
 
 
-
     updateAimParams() {
         switch (this.angle) {
             case 0:
@@ -471,4 +470,9 @@ export class Tank extends Rectagle {
         }
     }
 
+    static getRadiusToNotOverlap(tank1, tank2) {
+        let tank1Distance = Math.pow(tank1.width/2 * tank1.width/2 + tank1.height/2 * tank1.height/2, 0.5);
+        let tank2Distance = Math.pow(tank2.width/2 * tank2.width/2 + tank2.height/2 * tank2.height/2, 0.5);
+        return tank1Distance + tank2Distance;
+    }
 }
