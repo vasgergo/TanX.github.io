@@ -139,11 +139,14 @@ function init() {
 
     let randomInit = true;
 
-    fences.push(new Fence(350, 100, 'tank_trap', 10));
-    fences.push(new Fence(350, 400, 'tank_trap', 10));
-    fences.push(new Fence(700, 100, 'tank_trap', 10));
-    fences.push(new Fence(700, 400, 'tank_trap', 10));
-    fences.push(new Fence(480, 250, 'tank_trap', 10));
+    fences.push(new Fence(340, 120, 'round', 10));
+    fences.push(new Fence(340, 420, 'round', 10));
+    fences.push(new Fence(700, 120, 'round', 10));
+    fences.push(new Fence(700, 420, 'round', 10));
+    fences.push(new Fence(500, 260, 'round', 10));
+    fences.push(new Fence(180, 260, 'round', 10));
+    fences.push(new Fence(850, 260, 'round', 10));
+
 
     //----------PREDEFINED INITIALIZATION----------------
 

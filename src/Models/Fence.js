@@ -2,7 +2,7 @@ import {Random} from "../Services/Random.js";
 import {Overlappable} from "../Services/Overlappable.js";
 import {Rectagle} from "./Rectagle.js";
 
-export class Fence extends Rectagle{
+export class Fence extends Rectagle {
     static image;
 
     constructor(x, y, type, blockSize) {
@@ -102,6 +102,19 @@ export class Fence extends Rectagle{
                         [0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0],
                         [0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0],
                         [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0]
+                    ];
+                    break;
+                case 'round':
+                    shape = [
+                        [0, 0, 0, 0, 1, 0, 0, 0, 0],
+                        [0, 0, 0, 1, 1, 1, 0, 0, 0],
+                        [0, 0, 1, 1, 1, 1, 1, 0, 0],
+                        [0, 1, 1, 1, 1, 1, 1, 1, 0],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [0, 1, 1, 1, 1, 1, 1, 1, 0],
+                        [0, 0, 1, 1, 1, 1, 1, 0, 0],
+                        [0, 0, 0, 1, 1, 1, 0, 0, 0],
+                        [0, 0, 0, 0, 1, 0, 0, 0, 0]
                     ];
                     break;
                 default:
