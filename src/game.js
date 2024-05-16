@@ -120,11 +120,11 @@ function init() {
     }
     players.push(bluePlayer);
     players.push(redPlayer);
-    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'up'));
+    bluePlayer.addTank(new Tank(100, 150, 'blue', 'light', 'right'));
     bluePlayer.addTank(new Tank(100, 300, 'blue', 'medium', 'right'));
     bluePlayer.addTank(new Tank(100, 450, 'blue', 'heavy', 'right'));
     redPlayer.addTank(new Tank(930, 150, 'red', 'light', 'left'));
-    redPlayer.addTank(new Tank(890, 310, 'red', 'medium', 'left'));
+    redPlayer.addTank(new Tank(980, 310, 'red', 'medium', 'left'));
     redPlayer.addTank(new Tank(950, 430, 'red', 'heavy', 'left'));
 
 
