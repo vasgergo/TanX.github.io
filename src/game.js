@@ -115,7 +115,7 @@ function init() {
 
 
     if (GAME_MODE === 'pvc') {
-        bluePlayer.isBot = true;
+        bluePlayer.isBot = false;
         redPlayer.isBot = true;
     }
     players.push(bluePlayer);
@@ -137,7 +137,7 @@ function init() {
     allOverlappables.push(fences, heals, fuels, tanks);
 
 
-    let randomInit = true;
+    let randomInit = false;
 
     fences.push(new Fence(340, 120, 'round', 10));
     fences.push(new Fence(340, 420, 'round', 10));
