@@ -81,7 +81,7 @@ export class Player {
 
             //cirlce around the fence
             let distance = Player.getDistance(x, y, fence.getCenter().x, fence.getCenter().y);
-            let radius = 80;
+            let radius = 100;
             if (distance < radius) {
                 utility = -9;
             }
