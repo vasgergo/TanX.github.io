@@ -40,7 +40,7 @@ export class Tank extends Rectagle {
                 this.width = 40;
                 this.height = 40;
                 this.maxHealth = 30;
-                this.health = 30;
+                this.health = 20;
                 this.maxFuel = 100;
                 this.fuel = 100;
                 this.consumption = 30;
@@ -52,7 +52,7 @@ export class Tank extends Rectagle {
                 this.width = 55;
                 this.height = 55;
                 this.maxHealth = 70;
-                this.health = 70;
+                this.health = 50;
                 this.maxFuel = 150;
                 this.fuel = 150;
                 this.consumption = 40;
@@ -64,7 +64,7 @@ export class Tank extends Rectagle {
                 this.width = 70;
                 this.height = 70;
                 this.maxHealth = 100;
-                this.health = 100;
+                this.health = 70;
                 this.maxFuel = 200;
                 this.fuel = 200;
                 this.consumption = 80;
@@ -392,6 +392,14 @@ export class Tank extends Rectagle {
             left: {x: this.getCenter().x - 1, y: this.getCenter().y},
         };
 
+    }
+
+    rangeToGo(){
+        return this.fuel * (100/this.consumption);
+    }
+
+    consumptionOn(distance){
+        return distance * (this.consumption/100);
     }
 
     shoot() {

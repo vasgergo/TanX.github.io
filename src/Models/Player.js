@@ -4,7 +4,7 @@ import {
     pressed_down_keys,
     activeTank,
     sounds,
-    timerO, heals, canvas, fences, tanks, objectAt, fuels,
+    timerO, heals, canvas, fences, tanks, objectAt, fuels, getPathAStar,
 } from "../game.js";
 import {Rectagle} from "./Rectagle.js";
 import {Tank} from "./Tank.js";
@@ -56,27 +56,18 @@ export class Player {
 
     static getUtility(x, y) {
         let utility = 0;
-        for (let i = 0; i < heals.length; i++) {
-            if (activeTank.health !== activeTank.maxHealth) {
-                utility += 10 / Math.pow(Player.getDistance(x, y, heals[i].getCenter().x, heals[i].getCenter().y), 1);
-            }
-        }
 
-        for (let i = 0; i < fuels.length; i++) {
-            if (activeTank.fuel !== activeTank.maxFuel) {
-                utility += 10 / Math.pow(Player.getDistance(x, y, fuels[i].getCenter().x, fuels[i].getCenter().y), 1);
-            }
-        }
-
+        //this is for avoiding other tanks
         tanks.filter(tank => tank !== activeTank).forEach(tank => {
             let distance = Player.getDistance(x, y, tank.getCenter().x, tank.getCenter().y);
             let radius = Tank.getRadiusToNotOverlap(activeTank, tank);
             if (distance < radius) {
                 utility = -9;
+                return utility;
             }
         });
 
-
+        //this is for avoiding fences
         fences.forEach(fence => {
 
             //cirlce around the fence
@@ -86,10 +77,33 @@ export class Player {
                 utility = -9;
             }
         });
-        // console.log(utility);
-        if (x < activeTank.width/2 || x + activeTank.width/2 > canvas.width || y < activeTank.height/2 || y + activeTank.height/2 > canvas.height) {
+        if (x < activeTank.width / 2 || x + activeTank.width / 2 > canvas.width || y < activeTank.height / 2 || y + activeTank.height / 2 > canvas.height) {
             utility = -9;
+            return utility;
         }
+
+        //this decide is it worth to go to the heal or fuel
+        for (let i = 0; i < heals.length; i++) {
+            let distance = Player.getDistance(x, y, heals[i].getCenter().x, heals[i].getCenter().y);
+            //only if we need to heal
+            if (activeTank.health !== activeTank.maxHealth) {
+                utility += 10 / Math.pow(Player.getDistance(x, y, heals[i].getCenter().x, heals[i].getCenter().y), 1);
+            }
+        }
+
+        for (let i = 0; i < fuels.length; i++) {
+            if (activeTank.fuel !== activeTank.maxFuel) {
+                let distance = Player.getDistance(x, y, fuels[i].getCenter().x, fuels[i].getCenter().y);
+                // console.log('Distance: ', distance, "range: ", activeTank.rangeToGo(), "cons: ", activeTank.consumptionOn(distance), fuels[i].amount);
+
+                //if tank can go for it and it worth it
+                if (distance * 1.5 < activeTank.rangeToGo() && activeTank.consumptionOn(distance) * 1.5 < fuels[i].amount) {
+                    utility += 10 / Math.pow(distance, 1);
+                }
+            }
+        }
+
+
         return utility;
     }
 
@@ -231,7 +245,6 @@ export class Player {
                 console.log('Shoot not found');
                 Player.endRound();
                 startNextRound();
-
             }
 
             function aimingAnimation(destP1, destP2) {
@@ -350,7 +363,7 @@ export class Player {
     }
 
     static drawUtilityHeatMap() {
-        return;
+        // return;
         if (!activeTank) {
             return;
         }

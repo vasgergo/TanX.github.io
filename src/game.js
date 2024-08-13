@@ -4,7 +4,6 @@ import {Fence} from "./Models/Fence.js";
 import {Heal} from "./Models/Heal.js";
 import {Fuel} from "./Models/Fuel.js";
 import {Timer} from "./Models/Timer.js";
-// import {Overlappable} from "./Services/Overlappable.js";
 
 const imagNames = ['desert', 'red_heavy', 'red_light', 'red_medium', 'blue_heavy', 'blue_light', 'blue_medium', 'fence', 'red_cross', 'fuel', 'heal', 'light1', 'light2', 'light3', 'medium1', 'medium2', 'medium3', 'heavy1', 'heavy2', 'heavy3'];
 
@@ -30,7 +29,6 @@ export let pressed_down_keys = {};
 
 export let timerO = new Timer(ROUND_TIME);
 
-//TIMER
 
 let moveAndAimInterval;
 let shootInterval;
@@ -113,10 +111,19 @@ function init() {
     redPlayer = new Player('red');
     bluePlayer = new Player('blue');
 
-
-    if (GAME_MODE === 'pvc') {
-        bluePlayer.isBot = false;
-        redPlayer.isBot = true;
+    switch (GAME_MODE) {
+        case 'pvp':
+            bluePlayer.isBot = false;
+            redPlayer.isBot = false;
+            break;
+        case 'pvc':
+            bluePlayer.isBot = false;
+            redPlayer.isBot = true;
+            break;
+        case 'cvc':
+            bluePlayer.isBot = true;
+            redPlayer.isBot = true;
+            break;
     }
     players.push(bluePlayer);
     players.push(redPlayer);
@@ -139,13 +146,11 @@ function init() {
 
     let randomInit = false;
 
-    fences.push(new Fence(340, 120, 'round', 10));
-    fences.push(new Fence(340, 420, 'round', 10));
-    fences.push(new Fence(700, 120, 'round', 10));
-    fences.push(new Fence(700, 420, 'round', 10));
+    fences.push(new Fence(340, 100, 'round', 10));
+    fences.push(new Fence(700, 100, 'round', 10));
     fences.push(new Fence(500, 260, 'round', 10));
-    fences.push(new Fence(180, 260, 'round', 10));
-    fences.push(new Fence(850, 260, 'round', 10));
+    fences.push(new Fence(340, 420, 'round', 10));
+    fences.push(new Fence(700, 420, 'round', 10));
 
 
     //----------PREDEFINED INITIALIZATION----------------
@@ -280,12 +285,12 @@ function nextRound() {
         startNextRound();
     });
 
-    // getPathAStar(activeTank, 200, 200);
+    // getPathAStar(activeTank, 1000, 400);
 
 
 }
 
-function getPathAStar(tank, destX, destY) {
+export function getPathAStar(tank, destX, destY) {
     console.log('getPathAStar');
     console.log(tank.x, tank.y, destX, destY);
 
@@ -304,10 +309,10 @@ function getPathAStar(tank, destX, destY) {
     let pfc = 0;
     openList.pullFirst = function () {
         pfc++;
-        context.beginPath();
-        context.strokeStyle = 'red';
-        context.fillRect(this[0].x, this[0].y, 1, 1);
-        context.stroke();
+        // context.beginPath();
+        // context.strokeStyle = 'red';
+        // context.fillRect(this[0].x, this[0].y, 1, 1);
+        // context.stroke();
 
         this.sort((a, b) => {
             return a.dist + getHeuristic(a) - b.dist - getHeuristic(b);
@@ -320,12 +325,12 @@ function getPathAStar(tank, destX, destY) {
         current = openList.pullFirst();
         if (current.x === destX && current.y === destY) {
             console.log("pfv: ", pfc);
-            context.beginPath();
-            context.strokeStyle = 'green';
-            context.lineWidth = 1;
-            context.moveTo(current.x, current.y);
-            context.lineTo(current.x + 1, current.y + 1);
-            context.stroke();
+            // context.beginPath();
+            // context.strokeStyle = 'green';
+            // context.lineWidth = 1;
+            // context.moveTo(current.x, current.y);
+            // context.lineTo(current.x + 1, current.y + 1);
+            // context.stroke();
             return linkedListToArray(current);
         }
         closedList.push(current);
@@ -567,4 +572,3 @@ function setGameContainerSizeAndPosition() {
     gameContainer.style.left = centerOfWindowWidth - (gameContainerCurr_width / 2) + 'px';
 
 }
-

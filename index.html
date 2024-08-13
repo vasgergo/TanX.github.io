@@ -51,6 +51,7 @@
     <!--    redirect to game.html-->
     <button id="pvp">Player VS Player</button>
     <button id="pvc">Player VS Computer</button>
+    <button id="cvc">Computer VS Computer</button>
     <button id="htp">How to play</button>
 </div>
 
@@ -65,9 +66,15 @@
         window.location.href = "src/game.html";
     });
 
+    document.getElementById("cvc").addEventListener("click", function () {
+        window.sessionStorage.setItem("playerMode", "cvc");
+        window.location.href = "src/game.html";
+    });
+
     document.getElementById("htp").addEventListener("click", function () {
         window.location.href = "src/howToPlay.html";
     });
+
 
 </script>
 </body>

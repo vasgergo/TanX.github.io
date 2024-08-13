@@ -63,10 +63,12 @@
         <p>Aiming: Arrows</p>
         <p>Shoot: Enter</p>
     </div>
+    <button>Go back to the main menu</button>
 </div>
-<!--<div id="gameContainer">-->
-<!--    <canvas id="myCanvas" width="1100" height="680"></canvas>-->
-<!--</div>-->
-<!--<script type="module" src="htp.js"></script>-->
+<script>
+    document.querySelector("button").addEventListener("click", function () {
+        window.location.href = "../index.html";
+    });
+</script>
 </body>
 </html>
