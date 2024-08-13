@@ -363,14 +363,14 @@ export class Player {
     }
 
     static drawUtilityHeatMap() {
-        // return;
+        return;
         if (!activeTank) {
             return;
         }
         let ctx = canvas.getContext('2d');
         let width = canvas.width;
         let height = canvas.height;
-        let cellSize = 30;
+        let cellSize = 20;
         let heatmap = [];
         for (let i = 0; i < width; i += cellSize) {
             for (let j = 0; j < height; j += cellSize) {
@@ -387,7 +387,7 @@ export class Player {
             //write utility on
             ctx.fillStyle = 'black';
             ctx.font = '12px Arial';
-            ctx.fillText(heatmap[i].utility.toFixed(2), heatmap[i].x + 2, heatmap[i].y + 10);
+            // ctx.fillText(heatmap[i].utility.toFixed(2), heatmap[i].x + 2, heatmap[i].y + 10);
         }
 
         function getCenter(x, y) {
