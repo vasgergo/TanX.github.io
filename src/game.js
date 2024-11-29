@@ -50,7 +50,6 @@ window.onload = function () {
 
 function loadImages() {
 
-    //load sounds
     sounds = {
         'fence_bumm': new Audio('./Sounds/fence_bumm.mp3'),
         'tank_fire': new Audio('./Sounds/tank_fire.mp3'),
@@ -69,16 +68,13 @@ function loadImages() {
         });
     }
 
-    //load all images
     let promises = [];
 
-    //for in pictures folder
     for (let i = 0; i < imagNames.length; i++) {
         promises.push(loadPngByName(imagNames[i]));
     }
 
     Promise.all(promises).then(() => {
-        console.log('all images loaded');
         init()
     });
 }
@@ -214,7 +210,7 @@ function startGame() {
 export function startNextRound() {
     if (redPlayer.isLose() || bluePlayer.isLose()) {
         console.log('game over');
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
     } else {
         for (let i = 0; i < tanks.length; i++) {
             tanks[i].addFuel(30);
@@ -456,7 +452,7 @@ function drawAim(tankParam) {
     let destX;
     let destY;
     let allDistance = 0;
-    let maxDistance = 500;
+    let maxDistance = 250;
     for (let i = 0; allDistance < maxDistance; i++) {
         destX = tankParam.shootFunction(i).x;
         destY = tankParam.shootFunction(i).y;

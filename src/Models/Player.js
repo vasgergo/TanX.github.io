@@ -11,6 +11,7 @@ import {Tank} from "./Tank.js";
 
 
 export class Player {
+
     constructor(color, isBot = false) {
         this.color = color;
         this.isBot = isBot;
@@ -18,7 +19,6 @@ export class Player {
         this.tankIndex = -1;
         this.activeTank = null;
     }
-
 
     addTank(tank) {
         this.tanks.push(tank);
@@ -72,7 +72,7 @@ export class Player {
 
             //cirlce around the fence
             let distance = Player.getDistance(x, y, fence.getCenter().x, fence.getCenter().y);
-            let radius = 100;
+            let radius = 70;
             if (distance < radius) {
                 utility = -9;
             }
@@ -102,8 +102,6 @@ export class Player {
                 }
             }
         }
-
-
         return utility;
     }
 
@@ -363,14 +361,14 @@ export class Player {
     }
 
     static drawUtilityHeatMap() {
-        return;
+        // return;
         if (!activeTank) {
             return;
         }
         let ctx = canvas.getContext('2d');
         let width = canvas.width;
         let height = canvas.height;
-        let cellSize = 20;
+        let cellSize = 10;
         let heatmap = [];
         for (let i = 0; i < width; i += cellSize) {
             for (let j = 0; j < height; j += cellSize) {

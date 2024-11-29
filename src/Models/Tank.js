@@ -121,8 +121,8 @@ export class Tank extends Rectagle {
             // max: 250,
         },
         p2: {
-            min: 15,
-            max: 180,
+            min: 20,
+            max: 200,
             // min: 10,
             // max: 250,
         }
