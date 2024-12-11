@@ -53,8 +53,6 @@ function loadImages() {
     sounds = {
         'fence_bumm': new Audio('./Sounds/fence_bumm.mp3'),
         'tank_fire': new Audio('./Sounds/tank_fire.mp3'),
-        'aiming': new Audio('./Sounds/aiming.mp3'),
-        'ai_thinking': new Audio('./Sounds/ai_thinking.mp3'),
     }
 
     function loadPngByName(imageName) {
@@ -232,14 +230,11 @@ export function startNextRound() {
         }
         let pressEnter = document.getElementById('pressEnter');
         if (activePlayer.isBot) {
-            sounds['ai_thinking'].play();
             pressEnter.innerText = 'AI is thinking...';
 
             activePlayer.calculateOptions(callback);
 
             function callback() {
-                sounds['ai_thinking'].pause();
-                sounds['ai_thinking'].currentTime = 0;
                 pressEnter.innerText = 'Ai is ready, press enter to start next round';
                 window.addEventListener('keypress', goNextRound);
             }

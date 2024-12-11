@@ -94,7 +94,6 @@ export class Player {
         for (let i = 0; i < fuels.length; i++) {
             if (activeTank.fuel !== activeTank.maxFuel) {
                 let distance = Player.getDistance(x, y, fuels[i].getCenter().x, fuels[i].getCenter().y);
-                // console.log('Distance: ', distance, "range: ", activeTank.rangeToGo(), "cons: ", activeTank.consumptionOn(distance), fuels[i].amount);
 
                 //if tank can go for it and it worth it
                 if (distance * 1.5 < activeTank.rangeToGo() && activeTank.consumptionOn(distance) * 1.5 < fuels[i].amount) {
@@ -111,7 +110,6 @@ export class Player {
 
     static timeUp() {
         Player.endRound();
-        console.log('Time up');
         setTimeout(() => {
             Player.removeControls();
             startNextRound();
@@ -142,7 +140,6 @@ export class Player {
                         }
                     }
                     if (bestNeighbour !== null && maxUtility > currunetUtility + 0.0001 && activeTank.fuel > 10) {
-                        console.log('Better move', bestNeighbour);
                         activeTank.move(bestNeighbour);
                     } else {
                         console.log('No better move');
@@ -232,7 +229,6 @@ export class Player {
                                         });
 
                                     });
-                                    console.log('TRIES', tries);
                                     return;
                                 }
                             }
