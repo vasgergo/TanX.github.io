@@ -153,7 +153,6 @@ function init() {
 
     if (!randomInit) {
 
-
         heals.push(new Heal(200, 200));
         heals.push(new Heal(500, 400));
         heals.push(new Heal(500, 400));
@@ -166,7 +165,6 @@ function init() {
         fuels.push(new Fuel(700, 270));
         fuels.push(new Fuel(700, 270));
         fuels.push(new Fuel(500, 150));
-
     }
     //-----------RANDOM INITIALIZATION----------------
 
@@ -186,22 +184,14 @@ function init() {
             fuels.push(new Fuel(0, 0).placeRandomly(allOverlappables));
         }
 
-
     }
 
-
-    //it's needed to start with blue player
     activePlayer = redPlayer;
 
     startGame();
 }
 
 function startGame() {
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            // menu
-        }
-    });
     console.log('game started');
     updateFrame();
     startNextRound();
@@ -226,7 +216,7 @@ export function startNextRound() {
         activeTank = activePlayer.nextTank();
         console.log('->Active player is: ' + activePlayer.color + ' tank: ' + activeTank.type);
         updateInfoPanels();
-        //set all tank class div background to red
+
         updateInfoPanelTankColor();
         document.getElementById(activeTank.team + '_' + activeTank.type).style.backgroundColor = 'lightgreen';
         if (activePlayer.color === 'blue') {
@@ -274,16 +264,11 @@ function nextRound() {
     console.log('next round');
     timerO.start();
 
-
     updateFrame()
 
     activePlayer.turn().then(() => {
         startNextRound();
     });
-
-    // getPathAStar(activeTank, 1000, 400);
-
-
 }
 
 export function getPathAStar(tank, destX, destY) {
@@ -436,7 +421,6 @@ export function drawExplosionAnimation(x, y, size) {
         context.fillStyle = 'red';
         context.fill();
         context.closePath();
-
         counter = counter * 1.1;
     }, 10);
 }
