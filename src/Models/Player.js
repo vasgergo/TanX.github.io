@@ -72,7 +72,7 @@ export class Player {
 
             //cirlce around the fence
             let distance = Player.getDistance(x, y, fence.getCenter().x, fence.getCenter().y);
-            let radius = 70;
+            let radius = 100;
             if (distance < radius) {
                 utility = -9;
             }
@@ -357,7 +357,6 @@ export class Player {
     }
 
     static drawUtilityHeatMap() {
-        // return;
         if (!activeTank) {
             return;
         }

@@ -24,7 +24,7 @@ export class Fuel extends Rectagle{
 
         while (isOverlap && maxTry > 0) {
             x = Random.getRandomInt(50, 1000);
-            y = Random.getRandomInt(50, 450);
+            y = Random.getRandomInt(50, 600);
             result = new Fuel(x, y);
             isOverlap = false;
             for (let i = 0; i < allOverlappables.length; i++) {

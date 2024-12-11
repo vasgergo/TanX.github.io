@@ -24,8 +24,8 @@ export class Heal extends Rectagle{
         let isOverlap = true;
 
         while (isOverlap && maxTry > 0) {
-            x = Random.getRandomInt(50, 1450);
-            y = Random.getRandomInt(50, 650);
+            x = Random.getRandomInt(50, 1000);
+            y = Random.getRandomInt(50, 600);
             result = new Heal(x, y);
             isOverlap = false;
             for (let i = 0; i < allOverlappables.length; i++) {

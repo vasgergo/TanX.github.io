@@ -468,7 +468,7 @@ export function updateFrame() {
         tank.draw();
     });
 
-    Player.drawUtilityHeatMap();
+    // Player.drawUtilityHeatMap();
 
     updateInfoPanels();
 }
